@@ -167,18 +167,20 @@
     }
 
     var links = el("div", "cell-links");
-    var a = el("a", "cell-src", "Source");
+    var a = el("a", "cell-src", "\u2197\uFE0E");
     a.href = safeHref(cell.source);
     a.target = "_blank";
     a.rel = "noopener";
-    a.appendChild(srOnly(" for " + toolLabel + ": " + taskLabel));
+    a.title = "Open the source";
+    a.appendChild(srOnly(" Source for " + toolLabel + ": " + taskLabel));
     links.appendChild(a);
     if (cell.note) {
-      var nb = el("button", "note-btn", "Note");
+      var nb = el("button", "note-btn", "i");
       nb.type = "button";
+      nb.title = "Show the note";
       nb.setAttribute("aria-expanded", String(state.notes));
       nb.setAttribute("aria-controls", noteId);
-      nb.appendChild(srOnly(" for " + toolLabel + ": " + taskLabel));
+      nb.appendChild(srOnly(" Note for " + toolLabel + ": " + taskLabel));
       links.appendChild(nb);
     }
     box.appendChild(links);

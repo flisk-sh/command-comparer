@@ -20,9 +20,9 @@
   <p class="cell-note" id="note-{{ include.cid }}-{{ include.tid }}">{{ cell.note | escape }}</p>
   {%- endif -%}
   <div class="cell-links">
-    <a class="cell-src" href="{{ cell.source }}" target="_blank" rel="noopener">Source<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></a>
+    <a class="cell-src" href="{{ cell.source }}" target="_blank" rel="noopener" title="Open the source">&#8599;&#xFE0E;<span class="sr-only"> Source for {{ include.tool }}: {{ include.task }}</span></a>
     {%- if cell.note -%}
-    <button type="button" class="note-btn" aria-expanded="false" aria-controls="note-{{ include.cid }}-{{ include.tid }}">Note<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></button>
+    <button type="button" class="note-btn" aria-expanded="false" aria-controls="note-{{ include.cid }}-{{ include.tid }}" title="Show the note">i<span class="sr-only"> Note for {{ include.tool }}: {{ include.task }}</span></button>
     {%- endif -%}
   </div>
 </div>

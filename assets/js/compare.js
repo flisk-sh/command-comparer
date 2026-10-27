@@ -103,6 +103,34 @@
     }
   });
 
+  // --- Add tool menu: keep the list inside the window ---------------------
+  // The chip can sit far to the right, so the list is placed against the window, not the chip.
+  function placeAddList(details) {
+    var list = details.querySelector(".add-list");
+    var summary = details.querySelector("summary");
+    if (!list || !summary) return;
+    var gap = 8;
+    var vw = document.documentElement.clientWidth;
+    var vh = window.innerHeight;
+    var width = Math.min(576, vw - gap * 2);
+    var r = summary.getBoundingClientRect();
+    var left = Math.min(Math.max(gap, r.left), vw - width - gap);
+    var top = r.bottom + 6;
+    list.style.width = width + "px";
+    list.style.left = left + "px";
+    list.style.top = top + "px";
+    list.style.maxHeight = Math.max(160, vh - top - gap) + "px";
+  }
+
+  document.addEventListener("toggle", function (e) {
+    var d = e.target;
+    if (d && d.matches && d.matches("details.add-menu") && d.open) placeAddList(d);
+  }, true);
+
+  window.addEventListener("resize", function () {
+    Array.prototype.forEach.call(document.querySelectorAll("details.add-menu[open]"), placeAddList);
+  });
+
   // --- Filters on a tab page ---------------------------------------------
   var table = document.getElementById("comparison");
   if (!table) return;

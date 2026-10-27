@@ -303,6 +303,9 @@ input[type="search"]:focus-visible {
   border-radius: var(--r-card);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
 }
+/* With scripting on, compare.js places the list against the window (fixed), so it can never
+   run off the screen. Without it the list hangs under the chip. */
+.js .add-list { position: fixed; top: 0; left: 0; }
 .add-hint, .add-filter { grid-column: 1 / -1; }
 .add-hint { margin: 0 0 0.25rem; padding: 0.15rem 0.4rem; color: var(--faint); font-size: 0.8125rem; }
 .add-filter {
@@ -364,7 +367,7 @@ input[type="search"]:focus-visible {
 .compare {
   width: 100%;
   /* Each tool column keeps at least 9rem so commands stay readable. */
-  min-width: calc(10rem + var(--cols, 5) * 9rem);
+  min-width: calc(12.5rem + var(--cols, 5) * 9rem);
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
@@ -374,7 +377,7 @@ input[type="search"]:focus-visible {
 }
 
 .compare th, .compare td {
-  padding: 0.5rem 0.7rem;
+  padding: 0.3rem 0.5rem;
   text-align: left;
   vertical-align: top;
   border-top: 1px solid var(--line);
@@ -400,7 +403,9 @@ input[type="search"]:focus-visible {
 .compare thead a:hover { text-decoration: underline; }
 .th-tag { display: block; margin-top: -1px; font-size: 0.75rem; font-weight: 500; color: var(--faint); }
 
-.compare .col-task { width: 10rem; }
+.compare .col-task { width: 9rem; }
+/* Flisk is the point of the page, so its column gets more room than the others. */
+.compare th.col-flisk { width: 12.5rem; }
 .compare .cell-task { font-weight: 700; font-size: 0.875rem; background: var(--surface); }
 
 .compare tbody tr:hover > td:not(.col-flisk), .compare tbody tr:hover > .cell-task { background: var(--surface-2); }
@@ -417,18 +422,27 @@ input[type="search"]:focus-visible {
 .compare th.col-flisk { border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
 .compare tbody tr:last-child td.col-flisk { border-bottom: 2px solid var(--accent-line); }
 
-.cell { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-start; }
+.cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.3rem;
+  row-gap: 0.25rem;
+  align-items: start;
+}
+.cell > * { grid-column: 1; min-width: 0; }
+.cell > .cell-links { grid-column: 2; grid-row: 1; }
+.cell > .cell-note { grid-column: 1 / -1; }
 .cell p { margin: 0; }
 
 .cmd { position: relative; width: 100%; }
 .cmd code {
   display: block;
-  font-size: 0.78rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  line-height: 1.35;
   background: var(--code-bg);
   border: 1px solid var(--line);
   border-radius: var(--r-code);
-  padding: 0.25rem 0.5rem;
+  padding: 0.12rem 0.4rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -471,25 +485,32 @@ input[type="search"]:focus-visible {
    scanned. The Notes chip opens all of them, and each cell's Note button opens one. */
 .cell-note { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; }
 .note-btn { display: none; }
-.js .note-btn {
-  display: inline;
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--link);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 .js .compare .cell-note { display: none; }
 .js .compare.show-notes .cell-note,
 .js .compare .cell.open .cell-note { display: block; }
 
-.cell-links { display: flex; gap: 0.75rem; align-items: baseline; }
-.cell-src { font-size: 0.75rem; font-weight: 500; }
+/* The icon rail: an arrow that opens the source, and an i that opens the note. */
+.cell-links { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+.cell-src, .js .note-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--link);
+  text-decoration: none;
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.js .note-btn { font-style: italic; font-family: Georgia, serif; }
+.cell-src:hover, .js .note-btn:hover { border-color: var(--accent-line); background: var(--surface-2); }
+.js .note-btn[aria-expanded="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 
 .empty { padding: 2rem 1rem; text-align: center; color: var(--muted); }
 
@@ -540,28 +561,33 @@ input[type="search"]:focus-visible {
 }
 .site-footer p { margin: 0 0 0.4rem; max-width: 52rem; }
 
-/* When a table is wider than the screen, scroll it sideways. A scroll box turns off the
-   sticky header, so this only applies at the widths where that tab's table does not fit.
-   The columns include Flisk; 2, 3 and 4 always fit above the phone breakpoint. */
-@media (min-width: 821px) and (max-width: 57rem) {
-  .table-wrap[data-cols="5"] { overflow-x: auto; border-radius: var(--r-card); }
-  .table-wrap[data-cols="5"] .compare thead th { position: static; }
-}
-@media (min-width: 821px) and (max-width: 67rem) {
-  .table-wrap[data-cols="6"] { overflow-x: auto; border-radius: var(--r-card); }
-  .table-wrap[data-cols="6"] .compare thead th { position: static; }
-}
-@media (min-width: 821px) and (max-width: 76rem) {
-  .table-wrap[data-cols="7"] { overflow-x: auto; border-radius: var(--r-card); }
-  .table-wrap[data-cols="7"] .compare thead th { position: static; }
-}
-@media (min-width: 821px) and (max-width: 86rem) {
-  .table-wrap[data-cols="8"] { overflow-x: auto; border-radius: var(--r-card); }
-  .table-wrap[data-cols="8"] .compare thead th { position: static; }
-}
-@media (min-width: 821px) and (max-width: 95rem) {
-  .table-wrap[data-cols="9"] { overflow-x: auto; border-radius: var(--r-card); }
-  .table-wrap[data-cols="9"] .compare thead th { position: static; }
+/* Desktop: the page fills the browser window and the table scrolls inside it, in both
+   directions. The header row and the Task column are frozen, so you always see which tool
+   and which task a cell belongs to. Phones keep normal page scrolling (cards, below). */
+@media (min-width: 821px) {
+  body.app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  body.app > .site-header { flex: none; }
+  body.app > main { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+  body.app .tabs, body.app .top, body.app .toolbar, body.app .legend { flex: none; }
+  body.app .compare-section { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  body.app .compare-section > .table-wrap,
+  body.app #pick-out {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+  body.app .compare-section > .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+  }
+  body.app .compare-section > .table-wrap > .compare { border: 0; border-radius: 0; }
+  body.app .legend { margin: 0.4rem 0 0; }
+  body.app .site-footer { flex: none; margin: 0; padding: 0.3rem 0 0.5rem; border-top: 0; font-size: 0.75rem; }
+  body.app .site-footer p { margin: 0; max-width: none; }
+
+  .compare .cell-task { position: sticky; left: 0; z-index: 3; box-shadow: 1px 0 0 var(--line); }
+  .compare thead th.col-task { position: sticky; left: 0; top: 0; z-index: 6; }
 }
 
 /* Phones and small tablets: one card per task, Flisk first. */
@@ -569,8 +595,6 @@ input[type="search"]:focus-visible {
   .wrap { padding: 0 0.9rem; }
 
   .toolbar { gap: 0.5rem; }
-  .add-menu { position: static; }
-  .add-list { left: 0; right: 0; width: auto; }
   input[type="search"] { flex: 1 1 100%; }
   /* Chip rows scroll sideways instead of stacking into a tall block. */
   .chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }

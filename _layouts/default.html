@@ -38,7 +38,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 </head>
-<body>
+<body{% if page.layout == "tab" or page.app %} class="app"{% endif %}>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
