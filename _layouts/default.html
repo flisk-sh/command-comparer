@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="{{ site.lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- assign page_title = site.title -%}
+  {%- if page.title and page.url != "/" %}{% assign page_title = page.title | append: " | " | append: site.title %}{% endif %}
+  <title>{{ page_title | escape }}</title>
+  <meta name="description" content="{{ site.description | strip | escape }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page_title | escape }}">
+  <meta property="og:description" content="{{ site.description | strip | escape }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
+
+  <script>
+    // Apply a saved theme before first paint. Storage can be blocked, so fail quietly.
+    try {
+      var t = localStorage.getItem("theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="{{ '/' | relative_url }}">
+        <img src="{{ '/assets/favicon.svg' | relative_url }}" alt="" width="24" height="24">
+        <span>{{ site.title }}</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-extra" href="{{ '/' | relative_url }}#compare">Compare</a>
+        <a class="nav-extra" href="{{ '/' | relative_url }}#tools">Tools</a>
+        <a class="nav-extra" href="{{ '/' | relative_url }}#about">About</a>
+        <a href="{{ site.repo_url }}" rel="noopener">GitHub</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch theme">Theme</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Made by the <a href="{{ site.flisk_url }}" rel="noopener">Flisk</a> team, so read the sources. Every cell links to the docs behind it. Wrong or out of date? <a href="{{ site.repo_url }}/issues" rel="noopener">Open an issue</a> or send a pull request.</p>
+      <p>Names and trademarks belong to their owners. Source and data are MIT licensed.</p>
+    </div>
+  </footer>
+
+  <script src="{{ '/assets/js/compare.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+{%- comment -%}Each word is its own span so a flag such as -replace=ADDRESS never breaks at its hyphen. The space is an expression because Liquid drops a bare space between tags.{%- endcomment -%}
+<div class="cmd"><code>{% assign words = include.cmd | split: " " %}{% for w in words %}<span class="tok">{{ w | escape }}</span>{% unless forloop.last %}{{ " " }}{% endunless %}{% endfor %}</code><button type="button" class="copy" data-copy="{{ include.cmd | escape }}" aria-label="Copy command">Copy</button></div>

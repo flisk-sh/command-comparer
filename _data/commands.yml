@@ -1,0 +1,480 @@
+---
+# Command data for the comparison table.
+#
+# Columns are `tools`, in display order. Flisk is always first.
+# Rows are `tasks`. Every task has one cell per tool, keyed by tool id.
+#
+# Cell fields:
+#   cmd     The command, as a string or a list of strings. Leave it out
+#           when status is none or na.
+#   status  match (default): does the same job.
+#           partial: closest command, but it does a different job.
+#           none: no equivalent. Say what you do instead in `note`.
+#           na: not needed for this tool. Say why in `note`.
+#   note    One or two plain sentences.
+#   source  https URL of the official docs or source that backs the cell.
+#
+# Run `ruby scripts/check-data.rb` after editing. Add `--flisk` to check
+# every Flisk command and flag against the installed CLI.
+
+checked:
+  date: "2026-10-27"
+  flisk: "1.4.10"
+
+tools:
+  - id: flisk
+    name: Flisk
+    site: https://flisk.sh
+    docs: https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md
+    what: Runs a multi-service app on your computer. One service.json per service becomes a local Docker stack, with Tilt live-updating containers as you code.
+    scope: Local only. Flisk does not deploy and does not write Kubernetes manifests. Production stays on your Helm or Kubernetes workflow.
+    why: The tool this site is about, so it is always the first column.
+  - id: terraform
+    name: Terraform
+    site: https://developer.hashicorp.com/terraform
+    docs: https://developer.hashicorp.com/terraform/cli/commands
+    what: Provisions infrastructure, such as cloud networks, databases and clusters, from .tf files.
+    scope: A different problem. Terraform creates real infrastructure. It has no live-reload loop for code you are writing.
+    why: Teams ask how Flisk compares to it. The rows show where the jobs overlap and where they do not.
+  - id: compose
+    name: Docker Compose
+    site: https://docs.docker.com/compose/
+    docs: https://docs.docker.com/reference/cli/docker/compose/
+    what: Defines and runs several containers from one compose.yaml.
+    scope: The usual way to run several services locally. Flisk can import a docker-compose.yml.
+    why: Most teams start here, so it is the baseline.
+  - id: tilt
+    name: Tilt
+    site: https://tilt.dev
+    docs: https://docs.tilt.dev/cli/tilt.html
+    what: Watches your code and updates running containers or Kubernetes pods, driven by a Tiltfile.
+    scope: Flisk runs on Tilt and writes the Tiltfile for you. This column shows what you run without Flisk on top.
+    why: It is the engine under Flisk.
+  - id: skaffold
+    name: Skaffold
+    site: https://skaffold.dev
+    docs: https://skaffold.dev/docs/references/cli/
+    what: Builds images and deploys them to a Kubernetes cluster, redeploying when files change.
+    scope: Needs a Kubernetes cluster. Flisk runs on Docker alone.
+    why: The open-source dev loop from Google for Kubernetes teams.
+
+categories:
+  - id: setup
+    name: Set up
+  - id: run
+    name: Run
+  - id: inspect
+    name: Inspect
+  - id: diagnose
+    name: Diagnose
+  - id: agents
+    name: AI agents
+  - id: cleanup
+    name: Clean up
+
+tasks:
+  - id: create-project
+    category: setup
+    task: Create a project
+    keywords: init new scaffold template starter
+    cells:
+      flisk:
+        cmd: flisk project
+        note: Writes the project's master config. Add a template name, such as agent-stack, to clone a starter instead.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts
+      terraform:
+        cmd: terraform init
+        status: partial
+        note: Prepares a directory that already has .tf files, installing providers and modules. It does not write configuration.
+        source: https://developer.hashicorp.com/terraform/cli/commands/init
+      compose:
+        cmd: docker init
+        note: A Docker Desktop command. Walks you through writing a Dockerfile, compose.yaml, .dockerignore and README.Docker.md.
+        source: https://docs.docker.com/reference/cli/docker/init/
+      tilt:
+        status: none
+        note: No init command. You write the Tiltfile by hand.
+        source: https://docs.tilt.dev/cli/tilt.html
+      skaffold:
+        cmd: skaffold init
+        note: Looks for Dockerfiles and Kubernetes manifests in the project and writes skaffold.yaml.
+        source: https://skaffold.dev/docs/init/
+
+  - id: add-service
+    category: setup
+    task: Add a service
+    keywords: resource new service backend frontend worker agent api
+    cells:
+      flisk:
+        cmd: flisk resource api --type backend
+        note: Creates the service from a template, with its service.json. Other types include frontend, worker, mcp and agent.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts
+      terraform:
+        status: none
+        note: No scaffold command. You add a resource block to a .tf file.
+        source: https://developer.hashicorp.com/terraform/language/block/resource
+      compose:
+        status: none
+        note: No command for it. You add an entry under services in compose.yaml.
+        source: https://docs.docker.com/reference/compose-file/services/
+      tilt:
+        status: none
+        note: No command for it. You add docker_build, docker_compose, k8s_yaml or local_resource calls to the Tiltfile.
+        source: https://docs.tilt.dev/api.html
+      skaffold:
+        status: none
+        note: No command for it. You add an artifact and its manifests to skaffold.yaml.
+        source: https://skaffold.dev/docs/references/yaml/
+
+  - id: import-compose
+    category: setup
+    task: Import an existing docker-compose.yml
+    keywords: migrate adopt existing brownfield compose convert
+    cells:
+      flisk:
+        cmd: flisk import ./my-app
+        note: Reads the directory's root docker-compose.yml and writes one bring-your-own service.json per Compose service. Add --dry-run to print the plan first.
+        source: https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md#flisk-import-dir
+      terraform:
+        status: none
+        note: terraform import adopts existing cloud resources into state. It does not read Compose files.
+        source: https://developer.hashicorp.com/terraform/language/import
+      compose:
+        status: na
+        note: Not needed. Compose runs the file as it is.
+        source: https://docs.docker.com/reference/cli/docker/compose/
+      tilt:
+        cmd: docker_compose('docker-compose.yml')
+        note: A Tiltfile line, not a CLI command. Tilt then shows each Compose service as a resource.
+        source: https://docs.tilt.dev/docker_compose.html
+      skaffold:
+        cmd: skaffold init --compose-file docker-compose.yml
+        note: Initializes skaffold.yaml from a docker-compose file. You still need a Kubernetes cluster to run it.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: start
+    category: run
+    task: Start the stack with live reload
+    keywords: up run dev watch hot reload start
+    cells:
+      flisk:
+        cmd: flisk up
+        note: Starts every service in Docker with Tilt watching for changes. Add a stack name to start one stack.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts
+      terraform:
+        cmd: terraform apply
+        status: partial
+        note: Creates or updates real infrastructure. There is no file watching or live reload.
+        source: https://developer.hashicorp.com/terraform/cli/commands/apply
+      compose:
+        cmd: docker compose up --watch
+        note: Rebuilds or syncs containers when files change. Each service you want watched needs a develop.watch section.
+        source: https://docs.docker.com/compose/how-tos/file-watch/
+      tilt:
+        cmd: tilt up
+        note: Runs the services in the Tiltfile and updates them as you edit.
+        source: https://docs.tilt.dev/cli/tilt_up.html
+      skaffold:
+        cmd: skaffold dev
+        note: Builds, deploys to a Kubernetes cluster and redeploys when files change.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: start-one
+    category: run
+    task: Start one service and what it needs
+    keywords: only single subset dependencies depends_on partial
+    cells:
+      flisk:
+        cmd: flisk up --only orders-api
+        note: Starts that service, the services it lists in dependsOn, and shared infrastructure.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts
+      terraform:
+        cmd: terraform apply -target=ADDRESS
+        status: partial
+        note: Applies one resource and what it depends on. HashiCorp says to use it in exceptional circumstances only.
+        source: https://developer.hashicorp.com/terraform/cli/commands/plan
+      compose:
+        cmd: docker compose up orders-api
+        note: Also starts linked services, unless they are already running.
+        source: https://docs.docker.com/reference/cli/docker/compose/up/
+      tilt:
+        cmd: tilt up orders-api
+        note: By default, Tiltfile args name the services to start. A Tiltfile that uses config.parse changes this.
+        source: https://docs.tilt.dev/cli/tilt_up.html
+      skaffold:
+        cmd: skaffold dev -m orders-api
+        status: partial
+        note: Filters to named modules, so it needs a multi-config skaffold.yaml.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: preview
+    category: run
+    task: Preview without changing anything
+    keywords: dry run plan what-if diff
+    cells:
+      flisk:
+        cmd: flisk up --dry-run
+        note: Shows what would start, without starting it.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts
+      terraform:
+        cmd: terraform plan
+        note: Shows the changes apply would make to your infrastructure.
+        source: https://developer.hashicorp.com/terraform/cli/commands/plan
+      compose:
+        cmd: docker compose --dry-run up
+        note: A global flag. It works with most commands, but not with ps, ls or logs.
+        source: https://docs.docker.com/reference/cli/docker/compose/
+      tilt:
+        status: none
+        note: tilt up has no dry-run flag.
+        source: https://docs.tilt.dev/cli/tilt_up.html
+      skaffold:
+        cmd: skaffold render
+        status: partial
+        note: Prints the Kubernetes manifests it would deploy. It connects to the cluster unless you add --offline.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: restart
+    category: run
+    task: Restart one service
+    keywords: reload rebuild trigger recreate bounce
+    cells:
+      flisk:
+        cmd: flisk restart api
+        note: Triggers the service's update in the running stack. Under the hood it calls tilt trigger.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/restart.ts
+      terraform:
+        cmd: terraform apply -replace=ADDRESS
+        status: partial
+        note: Replaces one resource instance with a new one. That recreates real infrastructure.
+        source: https://developer.hashicorp.com/terraform/cli/commands/plan
+      compose:
+        cmd: docker compose restart api
+        note: Does not pick up changes to compose.yaml or environment variables. Run up again for those.
+        source: https://docs.docker.com/reference/cli/docker/compose/restart/
+      tilt:
+        cmd: tilt trigger api
+        note: Triggers an update for one resource.
+        source: https://docs.tilt.dev/cli/tilt_trigger.html
+      skaffold:
+        status: none
+        note: No per-service restart. skaffold dev redeploys when files change.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: stop
+    category: run
+    task: Stop and tear down
+    keywords: down destroy delete clean remove stop
+    cells:
+      flisk:
+        cmd: flisk down
+        note: Stops all running Tilt resources for the project. Add --dry-run to see what would stop.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts
+      terraform:
+        cmd: terraform destroy
+        note: Destroys the real infrastructure Terraform created, not a local dev stack.
+        source: https://developer.hashicorp.com/terraform/cli/commands/destroy
+      compose:
+        cmd: docker compose down
+        note: Removes the containers and the project's networks. Keeps named volumes unless you add -v.
+        source: https://docs.docker.com/reference/cli/docker/compose/down/
+      tilt:
+        cmd: tilt down
+        note: Deletes what tilt up created. Keeps volumes unless you add --delete-volumes.
+        source: https://docs.tilt.dev/cli/tilt_down.html
+      skaffold:
+        cmd: skaffold delete
+        note: Deletes what Skaffold deployed. skaffold dev also cleans up when you stop it.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: status
+    category: inspect
+    task: Check status
+    keywords: ps health running list state healthy
+    cells:
+      flisk:
+        cmd: flisk status
+        note: Shows services and stacks. Add --unhealthy to list only failing or starting services, or --json for scripts.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts
+      terraform:
+        cmd: terraform state list
+        status: partial
+        note: Lists the resources in state. It does not check whether they are healthy.
+        source: https://developer.hashicorp.com/terraform/cli/commands/state/list
+      compose:
+        cmd: docker compose ps
+        note: Lists the project's containers and their state.
+        source: https://docs.docker.com/reference/cli/docker/compose/ps/
+      tilt:
+        cmd: tilt get uiresources
+        note: Lists the resources of a running Tilt. The Tilt web UI shows the same.
+        source: https://docs.tilt.dev/resource_dependencies.html
+      skaffold:
+        status: none
+        note: No status command. Use kubectl to see what is running in the cluster.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: logs
+    category: inspect
+    task: Read logs
+    keywords: output tail follow stderr stdout errors
+    cells:
+      flisk:
+        cmd: flisk logs -s api --since 5m
+        note: Prints a bounded snapshot of recent lines. Add --unhealthy to read only failing services.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts
+      terraform:
+        status: none
+        note: Terraform does not run your services. TF_LOG turns on Terraform's own debug log.
+        source: https://developer.hashicorp.com/terraform/internals/debugging
+      compose:
+        cmd: docker compose logs -f api
+        note: Follows one service's output.
+        source: https://docs.docker.com/reference/cli/docker/compose/logs/
+      tilt:
+        cmd: tilt logs -f api
+        note: Follows one resource's logs. Add --since to limit by time.
+        source: https://docs.tilt.dev/cli/tilt_logs.html
+      skaffold:
+        cmd: skaffold run --tail
+        status: partial
+        note: No logs command. skaffold dev streams logs by default, and run does with --tail.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: urls
+    category: inspect
+    task: Find service URLs
+    keywords: ports networks links endpoints open browser address
+    cells:
+      flisk:
+        cmd: flisk networks
+        note: Lists the Traefik-routed URL of every service. Add --raw to print URLs only.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/networks.ts
+      terraform:
+        cmd: terraform output
+        status: partial
+        note: Prints output values from state, such as an endpoint you declared.
+        source: https://developer.hashicorp.com/terraform/cli/commands/output
+      compose:
+        cmd: docker compose port web 80
+        note: Prints the host port mapped to one service port.
+        source: https://docs.docker.com/reference/cli/docker/compose/port/
+      tilt:
+        status: none
+        note: No CLI command. Links show in the Tilt web UI.
+        source: https://docs.tilt.dev/cli/tilt.html
+      skaffold:
+        cmd: skaffold dev --port-forward
+        status: partial
+        note: Forwards service ports from the cluster as part of the dev loop.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: doctor
+    category: diagnose
+    task: Diagnose the machine
+    keywords: doctor check environment install readiness troubleshoot setup
+    cells:
+      flisk:
+        cmd: flisk doctor
+        note: Checks Docker, Tilt, disk space and Docker network capacity. Add --fix to repair unused networks and leftover probes.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts
+      terraform:
+        status: none
+        note: No environment check. terraform version prints versions only.
+        source: https://developer.hashicorp.com/terraform/cli/commands
+      compose:
+        cmd: docker info
+        status: partial
+        note: Prints system-wide information. It is not a readiness check.
+        source: https://docs.docker.com/reference/cli/docker/system/info/
+      tilt:
+        cmd: tilt doctor
+        note: Prints diagnostic information for bug reports. tilt verify-install checks the install.
+        source: https://docs.tilt.dev/cli/tilt_doctor.html
+      skaffold:
+        status: none
+        note: No machine check. skaffold diagnose looks at the project config instead.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: verify-config
+    category: diagnose
+    task: Check generated config
+    keywords: validate drift lint config verify
+    cells:
+      flisk:
+        cmd: flisk config verify
+        note: Checks that generated files still match .flisk/project.json. flisk config regenerate fixes drift.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts
+      terraform:
+        cmd: terraform validate
+        note: Checks the .tf files for syntax and internal consistency. It does not contact remote state or provider APIs.
+        source: https://developer.hashicorp.com/terraform/cli/commands/validate
+      compose:
+        cmd: docker compose config -q
+        note: Validates compose.yaml. Drop -q to print the resolved model.
+        source: https://docs.docker.com/reference/cli/docker/compose/config/
+      tilt:
+        cmd: tilt alpha tiltfile-result
+        status: partial
+        note: An alpha command. Runs the Tiltfile and prints the result as JSON.
+        source: https://docs.tilt.dev/cli/tilt_alpha_tiltfile-result.html
+      skaffold:
+        cmd: skaffold diagnose --yaml-only
+        note: Prints the effective skaffold.yaml.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: connect-agent
+    category: agents
+    task: Connect an AI coding agent (MCP)
+    keywords: ai agent mcp claude cursor codex llm assistant
+    cells:
+      flisk:
+        cmd: flisk connect claude
+        note: Writes the flisk mcp server entry and the Flisk skills. Also takes cursor or codex. The agent can then start, inspect and stop the stack.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/connect.ts
+      terraform:
+        cmd: claude mcp add terraform -s user -t stdio -- docker run -i --rm hashicorp/terraform-mcp-server
+        status: partial
+        note: HashiCorp's MCP server. It gives agents registry docs and HCP Terraform workspaces, not a local stack.
+        source: https://github.com/hashicorp/terraform-mcp-server
+      compose:
+        cmd: docker mcp client connect vscode --profile my-project
+        status: partial
+        note: Docker Desktop 4.62 and later. Connects an agent to MCP Toolkit servers, not to your Compose project.
+        source: https://docs.docker.com/ai/mcp-catalog-and-toolkit/cli/
+      tilt:
+        status: none
+        note: No official MCP server from the Tilt project.
+        source: https://docs.tilt.dev/cli/tilt.html
+      skaffold:
+        status: none
+        note: No official MCP server from the Skaffold project.
+        source: https://skaffold.dev/docs/references/cli/
+
+  - id: prune-networks
+    category: cleanup
+    task: Remove leftover Docker networks
+    keywords: prune network cleanup address pool leftovers
+    cells:
+      flisk:
+        cmd:
+          - flisk down --prune-networks
+          - flisk doctor --fix --scope machine
+        note: The first removes this project's unused networks. The second also clears unused networks left by other Flisk projects.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts
+      terraform:
+        status: none
+        note: Terraform manages what is in its state, not leftovers on your machine.
+        source: https://developer.hashicorp.com/terraform/cli/commands
+      compose:
+        cmd: docker network prune
+        note: Removes every unused network on the machine, not just this project's. docker compose down removes the project's own.
+        source: https://docs.docker.com/reference/cli/docker/network/prune/
+      tilt:
+        status: none
+        note: No network cleanup command.
+        source: https://docs.tilt.dev/cli/tilt.html
+      skaffold:
+        status: none
+        note: Skaffold runs on Kubernetes, so there are no Docker networks to clean up.
+        source: https://skaffold.dev/docs/references/cli/

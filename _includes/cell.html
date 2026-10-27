@@ -1,0 +1,22 @@
+{%- assign cell = include.cell -%}
+{%- assign status = cell.status | default: "match" -%}
+<div class="cell cell-{{ status }}">
+  {%- if status == "none" -%}
+  <p class="cell-empty">No equivalent</p>
+  {%- elsif status == "na" -%}
+  <p class="cell-empty">Not needed</p>
+  {%- elsif cell.cmd -%}
+    {%- if cell.cmd[0] -%}
+      {%- for c in cell.cmd -%}{% include cmd.html cmd=c %}{%- endfor -%}
+    {%- else -%}
+      {% include cmd.html cmd=cell.cmd %}
+    {%- endif -%}
+  {%- endif -%}
+  {%- if status == "partial" -%}
+  <p class="cell-flag">Closest command, different job</p>
+  {%- endif -%}
+  {%- if cell.note -%}
+  <p class="cell-note">{{ cell.note | escape }}</p>
+  {%- endif -%}
+  <a class="cell-src" href="{{ cell.source }}" target="_blank" rel="noopener">Source<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></a>
+</div>

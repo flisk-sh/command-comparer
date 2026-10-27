@@ -1,0 +1,106 @@
+---
+layout: default
+title: Flisk command comparison
+---
+{%- assign data = site.data.commands -%}
+
+<section class="hero">
+  <h1>Same jobs, <span class="accent">different commands</span></h1>
+  <p class="hero-sub">Flisk next to Terraform, Docker Compose, Tilt and Skaffold, for the tasks you run every day.</p>
+  <p class="scope">Flisk runs your app on your computer. It does not deploy, and it does not write Kubernetes manifests. Terraform provisions real infrastructure, so its cells show the nearest command and say when the job is different.</p>
+</section>
+
+<section id="compare" class="compare-section" aria-labelledby="compare-title">
+  <h2 id="compare-title" class="sr-only">Command comparison table</h2>
+
+  <div class="toolbar js-only" hidden>
+    <div class="field">
+      <label for="q">Search tasks and commands</label>
+      <input id="q" type="search" placeholder="restart, logs, prune, mcp..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="field">
+      <span class="label" id="cat-label">Task type</span>
+      <div class="chips" role="group" aria-labelledby="cat-label" id="cats">
+        <button type="button" class="chip" data-cat="all" aria-pressed="true">All</button>
+        {%- for c in data.categories %}
+        <button type="button" class="chip" data-cat="{{ c.id }}" aria-pressed="false">{{ c.name }}</button>
+        {%- endfor %}
+      </div>
+    </div>
+    <div class="field">
+      <span class="label" id="tool-label">Tools shown</span>
+      <div class="chips" role="group" aria-labelledby="tool-label" id="tools-toggle">
+        {%- for tool in data.tools %}
+        <button type="button" class="chip{% if tool.id == 'flisk' %} chip-flisk{% endif %}" data-tool="{{ tool.id }}" aria-pressed="true"{% if tool.id == 'flisk' %} disabled aria-label="Flisk is always shown"{% endif %}>{{ tool.name }}</button>
+        {%- endfor %}
+      </div>
+    </div>
+    <p class="count" id="count" role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="compare" id="comparison">
+      <thead>
+        <tr>
+          <th scope="col" class="col-task">Task</th>
+          {%- for tool in data.tools %}
+          <th scope="col" class="col-tool{% if tool.id == 'flisk' %} col-flisk{% endif %}" data-tool="{{ tool.id }}">
+            <a href="{{ tool.docs }}" target="_blank" rel="noopener">{{ tool.name }}</a>
+          </th>
+          {%- endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {%- for task in data.tasks %}
+        <tr data-category="{{ task.category }}" data-keywords="{{ task.keywords | escape }}">
+          <th scope="row" class="cell-task">
+            <span class="cell-task-name">{{ task.task }}</span>
+          </th>
+          {%- for tool in data.tools %}
+          {%- assign cell = task.cells[tool.id] %}
+          <td class="col-tool{% if tool.id == 'flisk' %} col-flisk{% endif %}" data-tool="{{ tool.id }}" data-label="{{ tool.name }}">
+            {%- include cell.html cell=cell tool=tool.name task=task.task %}
+          </td>
+          {%- endfor %}
+        </tr>
+        {%- endfor %}
+      </tbody>
+    </table>
+    <p class="empty js-only" id="empty" hidden>No task matches. Try a shorter search or pick All.</p>
+  </div>
+
+  <ul class="legend" aria-label="How to read a cell">
+    <li><span class="swatch swatch-match"></span>A command that does the same job</li>
+    <li><span class="swatch swatch-partial"></span>Closest command, but it does a different job</li>
+    <li><span class="swatch swatch-none"></span>No equivalent, or not needed</li>
+  </ul>
+</section>
+
+<section id="tools" class="prose" aria-labelledby="tools-title">
+  <h2 id="tools-title">The tools, and why these four</h2>
+  <p>Flisk is always the first column. The other four were picked because people use them for the same jobs: starting several services, watching code and reloading, and tearing it all down.</p>
+  <dl class="tool-list">
+    {%- for tool in data.tools %}
+    <div class="tool-item{% if tool.id == 'flisk' %} tool-item-flisk{% endif %}">
+      <dt><a href="{{ tool.site }}" target="_blank" rel="noopener">{{ tool.name }}</a></dt>
+      <dd>
+        <p>{{ tool.what }}</p>
+        <p><strong>Where it differs.</strong> {{ tool.scope }}</p>
+        <p class="why"><strong>Why it is here.</strong> {{ tool.why }}</p>
+      </dd>
+    </div>
+    {%- endfor %}
+  </dl>
+</section>
+
+<section id="about" class="prose" aria-labelledby="about-title">
+  <h2 id="about-title">About this table</h2>
+  <ul>
+    <li><strong>Checked on {{ data.checked.date }}.</strong> Every Flisk command was checked against Flisk {{ data.checked.flisk }} with <code>flisk --help</code> and <code>flisk &lt;command&gt; --help</code>. A script in the repo repeats that check.</li>
+    <li><strong>Every cell has a source.</strong> Flisk cells link to the Flisk source or docs. Other cells link to that tool's official documentation.</li>
+    <li><strong>"No equivalent" is an answer.</strong> We do not invent a command to fill a cell. When a tool has no command for a task, the note says what you do instead.</li>
+    <li><strong>Different problems stay different.</strong> Terraform provisions infrastructure. Flisk runs a local development loop. Where a Terraform command is only the nearest match, the cell says so.</li>
+    <li><strong>Conflict of interest.</strong> The Flisk team maintains this page. Check the sources, and tell us when a cell is wrong.</li>
+  </ul>
+  <p>To add a task or fix a cell, edit <a href="{{ site.repo_url }}/blob/main/_data/commands.yml" rel="noopener"><code>_data/commands.yml</code></a> and run <code>ruby scripts/check-data.rb</code>. The <a href="{{ site.repo_url }}#readme" rel="noopener">README</a> has the details.</p>
+</section>
