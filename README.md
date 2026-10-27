@@ -27,7 +27,7 @@ The layout follows [CloudComparer](https://github.com/ilyas-it83/CloudComparer):
 `_data/commands.yml` has four top-level keys:
 
 - `checked`: the date and Flisk version the Flisk commands were last checked against.
-- `tools`: the columns, in display order. Flisk first. Each has `id`, `name`, `site`, `docs`, `what`, `scope` and `why`.
+- `tools`: the columns, in display order. Flisk first. Each has `id`, `name`, `tagline` (two or three words shown under the column name, such as "Provisions infrastructure"), `site`, `docs`, `what`, `scope` and `why`.
 - `categories`: task types used by the filter chips.
 - `tasks`: the rows. Each has `id`, `category`, `task`, `keywords` and `cells`.
 
@@ -53,7 +53,7 @@ A cell is keyed by tool id:
 | --- | --- |
 | `cmd` | The command, as a string or a list of strings. Leave it out for `none` and `na`. |
 | `status` | `match` (default) does the same job. `partial` is the closest command but a different job. `none` has no equivalent. `na` is not needed for this tool. |
-| `note` | One or two plain sentences. Required for `partial`, `none` and `na`. |
+| `note` | One or two plain sentences, shown behind the cell's Note button or the Notes toggle. Required for `partial`, `none` and `na`. |
 | `source` | An `https` URL to the official docs or source. Required on every cell, including `none`. |
 
 Rules for the data:

@@ -34,7 +34,7 @@ errors << "Flisk must be the first tool (found #{tool_ids.first.inspect})" unles
 errors << "duplicate tool ids" unless tool_ids.uniq.size == tool_ids.size
 
 tools.each do |t|
-  %w[id name site docs what scope why].each do |k|
+  %w[id name tagline site docs what scope why].each do |k|
     errors << "tool #{t['id']}: missing #{k}" if t[k].to_s.strip.empty?
   end
 end

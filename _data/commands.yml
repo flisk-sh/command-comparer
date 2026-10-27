@@ -24,6 +24,7 @@ checked:
 tools:
   - id: flisk
     name: Flisk
+    tagline: Local dev stack
     site: https://flisk.sh
     docs: https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md
     what: Runs a multi-service app on your computer. One service.json per service becomes a local Docker stack, with Tilt live-updating containers as you code.
@@ -31,6 +32,7 @@ tools:
     why: The tool this site is about, so it is always the first column.
   - id: terraform
     name: Terraform
+    tagline: Provisions infrastructure
     site: https://developer.hashicorp.com/terraform
     docs: https://developer.hashicorp.com/terraform/cli/commands
     what: Provisions infrastructure, such as cloud networks, databases and clusters, from .tf files.
@@ -38,6 +40,7 @@ tools:
     why: Teams ask how Flisk compares to it. The rows show where the jobs overlap and where they do not.
   - id: compose
     name: Docker Compose
+    tagline: Local containers
     site: https://docs.docker.com/compose/
     docs: https://docs.docker.com/reference/cli/docker/compose/
     what: Defines and runs several containers from one compose.yaml.
@@ -45,6 +48,7 @@ tools:
     why: Most teams start here, so it is the baseline.
   - id: tilt
     name: Tilt
+    tagline: Live-update loop
     site: https://tilt.dev
     docs: https://docs.tilt.dev/cli/tilt.html
     what: Watches your code and updates running containers or Kubernetes pods, driven by a Tiltfile.
@@ -52,6 +56,7 @@ tools:
     why: It is the engine under Flisk.
   - id: skaffold
     name: Skaffold
+    tagline: Kubernetes dev loop
     site: https://skaffold.dev
     docs: https://skaffold.dev/docs/references/cli/
     what: Builds images and deploys them to a Kubernetes cluster, redeploying when files change.

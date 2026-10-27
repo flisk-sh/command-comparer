@@ -42,6 +42,7 @@
   var input = document.getElementById("q");
   var catBox = document.getElementById("cats");
   var toolBox = document.getElementById("tools-toggle");
+  var notesBtn = document.getElementById("notes-toggle");
   var countEl = document.getElementById("count");
   var emptyEl = document.getElementById("empty");
 
@@ -63,7 +64,7 @@
     return parts.join(" ").toLowerCase().replace(/\s+/g, " ");
   });
 
-  var state = { q: "", cat: "all", off: {} };
+  var state = { q: "", cat: "all", off: {}, notes: false };
 
   function readUrl() {
     try {
@@ -71,6 +72,7 @@
       state.q = (p.get("q") || "").trim();
       var cat = p.get("cat");
       if (cat && catBox && catBox.querySelector('[data-cat="' + cat.replace(/[^\w-]/g, "") + '"]')) state.cat = cat;
+      state.notes = p.get("notes") === "1";
       (p.get("hide") || "").split(",").forEach(function (id) {
         if (id && id !== "flisk") state.off[id] = true;
       });
@@ -84,6 +86,7 @@
       if (state.cat !== "all") p.set("cat", state.cat);
       var hidden = Object.keys(state.off).filter(function (k) { return state.off[k]; });
       if (hidden.length) p.set("hide", hidden.join(","));
+      if (state.notes) p.set("notes", "1");
       var qs = p.toString();
       history.replaceState(null, "", window.location.pathname + (qs ? "?" + qs : "") + window.location.hash);
     } catch (e) {}
@@ -106,7 +109,12 @@
       cell.hidden = !!state.off[cell.getAttribute("data-tool")];
     });
 
-    if (countEl) countEl.textContent = "Showing " + shown + " of " + rows.length + " tasks";
+    table.classList.toggle("show-notes", state.notes);
+    Array.prototype.forEach.call(table.querySelectorAll(".note-btn"), function (b) {
+      b.setAttribute("aria-expanded", String(state.notes || b.closest(".cell").classList.contains("open")));
+    });
+    if (notesBtn) notesBtn.setAttribute("aria-pressed", String(state.notes));
+    if (countEl) countEl.textContent = shown + " of " + rows.length + " tasks";
     if (emptyEl) emptyEl.hidden = shown !== 0;
     table.hidden = shown === 0;
   }
@@ -154,6 +162,23 @@
       writeUrl();
     });
   }
+
+  if (notesBtn) {
+    notesBtn.addEventListener("click", function () {
+      state.notes = !state.notes;
+      apply();
+      writeUrl();
+    });
+  }
+
+  // A cell's own Note button opens just that cell's note.
+  table.addEventListener("click", function (e) {
+    var btn = e.target.closest(".note-btn");
+    if (!btn) return;
+    var cell = btn.closest(".cell");
+    var open = cell.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(open));
+  });
 
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey || !input) return;

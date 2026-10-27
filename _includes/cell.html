@@ -13,10 +13,15 @@
     {%- endif -%}
   {%- endif -%}
   {%- if status == "partial" -%}
-  <p class="cell-flag">Closest command, different job</p>
+  <p class="cell-flag">Different job</p>
   {%- endif -%}
   {%- if cell.note -%}
-  <p class="cell-note">{{ cell.note | escape }}</p>
+  <p class="cell-note" id="note-{{ include.cid }}-{{ include.tid }}">{{ cell.note | escape }}</p>
   {%- endif -%}
-  <a class="cell-src" href="{{ cell.source }}" target="_blank" rel="noopener">Source<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></a>
+  <div class="cell-links">
+    <a class="cell-src" href="{{ cell.source }}" target="_blank" rel="noopener">Source<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></a>
+    {%- if cell.note -%}
+    <button type="button" class="note-btn" aria-expanded="false" aria-controls="note-{{ include.cid }}-{{ include.tid }}">Note<span class="sr-only"> for {{ include.tool }}: {{ include.task }}</span></button>
+    {%- endif -%}
+  </div>
 </div>
