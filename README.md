@@ -27,6 +27,12 @@ The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus a
 | AI agents | LangGraph, Mastra |
 | Agent tools | Warp, Superset, skills.sh, Coder |
 
+### Pick your own columns
+
+- On every tab, each tool chip is a switch: x removes the column, + brings it back. The choice is kept in the URL (`?hide=tilt`).
+- **+ Add tool** lists every tool that is not on the tab. Choosing one opens **Pick tools** with the tab's columns plus the new tool.
+- **Pick tools** (`/pick/`) lets you build any set of tools. Flisk stays first. It draws one table for each tab that covers at least one of your picks, so a tool that appears in several tabs shows up in each. The picks are in the URL (`?tools=terraform,pm2,nx`), so the link can be shared. **Start from a tab** loads a tab's columns.
+
 ## What is in the repo
 
 | Path | What it is |
@@ -36,9 +42,10 @@ The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus a
 | `_data/compare/<tab>.yml` | The rows and cells of one tab |
 | `_data/meta.yml` | The date and Flisk version the Flisk commands were checked against |
 | `_tabs/<tab>.md` | One stub per tab (`tab: <id>`). Jekyll builds the page from the data |
+| `pick.html`, `assets/compare.json`, `assets/js/pick.js` | The Pick tools page. The JSON is generated from `_data/` at build time and loaded by the page |
 | `index.html` | The home page, the Overview tab |
 | `_layouts/tab.html`, `_includes/cell.html`, `_includes/cmd.html` | How a tab, a cell and a command render |
-| `assets/css/style.css`, `assets/js/compare.js` | Light and dark themes, phone card layout, search, filters, copy buttons |
+| `assets/css/style.css`, `assets/js/compare.js` | Light and dark themes, phone card layout, search, tool chips, copy buttons |
 | `scripts/check-data.rb` | Checks the data (see below) |
 | `.github/workflows/site.yml` | Checks, builds and deploys to GitHub Pages |
 | `.github/workflows/links.yml` | Weekly check that every source URL still loads |

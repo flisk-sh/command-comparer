@@ -1,5 +1,6 @@
-/* Search, filters, theme toggle and copy buttons. The table is plain HTML, so the page
-   still reads fine without this script. Storage and clipboard can fail; both are guarded. */
+/* Shared behavior (theme, copy buttons, note buttons, menus) and the filters on a tab page.
+   The table is plain HTML, so a tab still reads fine without this script. Storage and
+   clipboard can fail; both are guarded. The pick page (pick.js) reuses the shared parts. */
 (function () {
   "use strict";
 
@@ -41,13 +42,73 @@
     tabBar.scrollLeft = Math.max(0, tabNow.offsetLeft - (tabBar.clientWidth - tabNow.offsetWidth) / 2);
   }
 
-  // --- Filters -----------------------------------------------------------
+  // --- Shared click handlers: they also cover cells that pick.js draws later ---
+  function fallbackCopy(value) {
+    var ta = document.createElement("textarea");
+    ta.value = value;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function flash(btn, label) {
+    var old = btn.textContent;
+    btn.textContent = label;
+    window.setTimeout(function () { btn.textContent = old; }, 1400);
+  }
+
+  document.addEventListener("click", function (e) {
+    var copy = e.target.closest ? e.target.closest(".copy") : null;
+    if (copy) {
+      var value = copy.getAttribute("data-copy") || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(
+          function () { flash(copy, "Copied"); },
+          function () { flash(copy, fallbackCopy(value) ? "Copied" : "Press Ctrl+C"); }
+        );
+      } else {
+        flash(copy, fallbackCopy(value) ? "Copied" : "Press Ctrl+C");
+      }
+      return;
+    }
+
+    // A cell's own Note button opens just that cell's note.
+    var note = e.target.closest ? e.target.closest(".note-btn") : null;
+    if (note) {
+      var cell = note.closest(".cell");
+      var open = cell.classList.toggle("open");
+      note.setAttribute("aria-expanded", String(open));
+      return;
+    }
+
+    // Close the Add tool menu when you click anywhere else.
+    Array.prototype.forEach.call(document.querySelectorAll("details.add-menu[open]"), function (d) {
+      if (!d.contains(e.target)) d.removeAttribute("open");
+    });
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      Array.prototype.forEach.call(document.querySelectorAll("details.add-menu[open]"), function (d) {
+        d.removeAttribute("open");
+        var s = d.querySelector("summary");
+        if (s) s.focus();
+      });
+    }
+  });
+
+  // --- Filters on a tab page ---------------------------------------------
   var table = document.getElementById("comparison");
   if (!table) return;
 
   var rows = Array.prototype.slice.call(table.querySelectorAll("tbody tr"));
   var input = document.getElementById("q");
-  var catBox = document.getElementById("cats");
   var toolBox = document.getElementById("tools-toggle");
   var notesBtn = document.getElementById("notes-toggle");
   var countEl = document.getElementById("count");
@@ -71,14 +132,12 @@
     return parts.join(" ").toLowerCase().replace(/\s+/g, " ");
   });
 
-  var state = { q: "", cat: "all", off: {}, notes: false };
+  var state = { q: "", off: {}, notes: false };
 
   function readUrl() {
     try {
       var p = new URLSearchParams(window.location.search);
       state.q = (p.get("q") || "").trim();
-      var cat = p.get("cat");
-      if (cat && catBox && catBox.querySelector('[data-cat="' + cat.replace(/[^\w-]/g, "") + '"]')) state.cat = cat;
       state.notes = p.get("notes") === "1";
       (p.get("hide") || "").split(",").forEach(function (id) {
         if (id && id !== "flisk") state.off[id] = true;
@@ -90,7 +149,6 @@
     try {
       var p = new URLSearchParams();
       if (state.q) p.set("q", state.q);
-      if (state.cat !== "all") p.set("cat", state.cat);
       var hidden = Object.keys(state.off).filter(function (k) { return state.off[k]; });
       if (hidden.length) p.set("hide", hidden.join(","));
       if (state.notes) p.set("notes", "1");
@@ -104,10 +162,8 @@
     var shown = 0;
 
     rows.forEach(function (row, i) {
-      var catOk = state.cat === "all" || row.getAttribute("data-category") === state.cat;
       var hay = haystack[i];
-      var textOk = terms.every(function (t) { return hay.indexOf(t) !== -1; });
-      var visible = catOk && textOk;
+      var visible = terms.every(function (t) { return hay.indexOf(t) !== -1; });
       row.hidden = !visible;
       if (visible) shown += 1;
     });
@@ -126,33 +182,23 @@
     table.hidden = shown === 0;
   }
 
+  // Each tool chip is a switch: x removes the column, + brings it back.
   function paintChips() {
-    if (catBox) {
-      Array.prototype.forEach.call(catBox.querySelectorAll(".chip"), function (chip) {
-        chip.setAttribute("aria-pressed", String(chip.getAttribute("data-cat") === state.cat));
-      });
-    }
-    if (toolBox) {
-      Array.prototype.forEach.call(toolBox.querySelectorAll(".chip"), function (chip) {
-        chip.setAttribute("aria-pressed", String(!state.off[chip.getAttribute("data-tool")]));
-      });
-    }
+    if (!toolBox) return;
+    Array.prototype.forEach.call(toolBox.querySelectorAll(".chip[data-tool]"), function (chip) {
+      var id = chip.getAttribute("data-tool");
+      if (id === "flisk") return;
+      var on = !state.off[id];
+      var name = chip.getAttribute("data-name") || chip.textContent;
+      chip.setAttribute("aria-pressed", String(on));
+      chip.setAttribute("aria-label", (on ? "Remove " : "Show ") + name + " column");
+      chip.title = on ? "Remove this column" : "Show this column";
+    });
   }
 
   if (input) {
     input.addEventListener("input", function () {
       state.q = input.value.trim();
-      apply();
-      writeUrl();
-    });
-  }
-
-  if (catBox) {
-    catBox.addEventListener("click", function (e) {
-      var chip = e.target.closest(".chip");
-      if (!chip) return;
-      state.cat = chip.getAttribute("data-cat");
-      paintChips();
       apply();
       writeUrl();
     });
@@ -178,15 +224,6 @@
     });
   }
 
-  // A cell's own Note button opens just that cell's note.
-  table.addEventListener("click", function (e) {
-    var btn = e.target.closest(".note-btn");
-    if (!btn) return;
-    var cell = btn.closest(".cell");
-    var open = cell.classList.toggle("open");
-    btn.setAttribute("aria-expanded", String(open));
-  });
-
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey || !input) return;
     var tag = (e.target.tagName || "").toLowerCase();
@@ -199,39 +236,4 @@
   if (input) input.value = state.q;
   paintChips();
   apply();
-
-  // --- Copy buttons --------------------------------------------------------
-  function fallbackCopy(value) {
-    var ta = document.createElement("textarea");
-    ta.value = value;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    var ok = false;
-    try { ok = document.execCommand("copy"); } catch (e) {}
-    document.body.removeChild(ta);
-    return ok;
-  }
-
-  function flash(btn, label) {
-    var old = btn.textContent;
-    btn.textContent = label;
-    window.setTimeout(function () { btn.textContent = old; }, 1400);
-  }
-
-  table.addEventListener("click", function (e) {
-    var btn = e.target.closest(".copy");
-    if (!btn) return;
-    var value = btn.getAttribute("data-copy") || "";
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(value).then(
-        function () { flash(btn, "Copied"); },
-        function () { flash(btn, fallbackCopy(value) ? "Copied" : "Press Ctrl+C"); }
-      );
-    } else {
-      flash(btn, fallbackCopy(value) ? "Copied" : "Press Ctrl+C");
-    }
-  });
 })();

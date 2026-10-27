@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /assets/compare.json
+---
+{"tools": {{ site.data.tools | jsonify }}, "tabs": {{ site.data.tabs | jsonify }}, "compare": {{ site.data.compare | jsonify }}}

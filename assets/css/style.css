@@ -185,7 +185,7 @@ code { font-family: var(--font-mono); }
 
 .tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: 3px;
   margin: 0.6rem 0 0;
   padding-bottom: 0.1rem;
   overflow-x: auto;
@@ -272,9 +272,90 @@ input[type="search"]:focus-visible {
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-.chip[aria-pressed="false"][data-tool] { color: var(--faint); text-decoration: line-through; }
+/* A tool chip is a switch: x removes the column, + brings it back. */
+.chip-tool[aria-pressed="true"]:not(.chip-flisk)::after { content: " \00d7"; font-weight: 700; opacity: 0.7; }
+.chip-tool[aria-pressed="false"] { color: var(--muted); border-style: dashed; }
+.chip-tool[aria-pressed="false"]::before { content: "+ "; font-weight: 700; }
 .chip:disabled { cursor: default; transform: none; }
 .chip-notes[aria-pressed="false"] { border-style: dashed; }
+
+/* Add tool menu: a chip that opens a list of the tools that are not shown. */
+.toolbar { position: relative; }
+.add-menu { position: relative; }
+.add-menu > summary { list-style: none; }
+.add-menu > summary::-webkit-details-marker { display: none; }
+.chip-add { display: inline-block; border-style: dashed; cursor: pointer; }
+.add-menu[open] > .chip-add { background: var(--surface-2); border-color: var(--accent-line); }
+.add-list {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: min(60vh, 28rem);
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.15rem;
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+.add-hint, .add-filter { grid-column: 1 / -1; }
+.add-hint { margin: 0 0 0.25rem; padding: 0.15rem 0.4rem; color: var(--faint); font-size: 0.8125rem; }
+.add-filter {
+  margin-bottom: 0.25rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: 0.2rem 0.8rem;
+}
+.add-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  padding: 0.35rem 0.6rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: left;
+  color: var(--text);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.add-item[hidden] { display: none; }
+.add-item:hover, .add-item:focus-visible { background: var(--surface-2); }
+.add-item small { color: var(--faint); font-size: 0.72rem; font-weight: 400; }
+
+.preset {
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: 0.15rem 0.6rem;
+  cursor: pointer;
+}
+
+/* The Pick tools page: one table per tab that covers the picks. */
+.tab-pick { border-style: dashed; border-color: var(--line-strong); }
+.tab-pick[aria-current="page"] { border-style: solid; border-color: var(--accent); }
+.pick-section { margin-top: 1.1rem; }
+.pick-heading { margin: 0 0 0.4rem; font-size: 1rem; letter-spacing: -0.01em; }
+.pick-heading a { color: var(--text); text-decoration: none; }
+.pick-heading a:hover { text-decoration: underline; }
 
 /* Table */
 
@@ -317,7 +398,7 @@ input[type="search"]:focus-visible {
 .compare thead th:last-child { border-top-right-radius: calc(var(--r-card) - 1px); }
 .compare thead a { color: var(--text); text-decoration: none; }
 .compare thead a:hover { text-decoration: underline; }
-.th-tag { display: block; font-size: 0.75rem; font-weight: 500; color: var(--faint); }
+.th-tag { display: block; margin-top: -1px; font-size: 0.75rem; font-weight: 500; color: var(--faint); }
 
 .compare .col-task { width: 10rem; }
 .compare .cell-task { font-weight: 700; font-size: 0.875rem; background: var(--surface); }
@@ -461,14 +542,26 @@ input[type="search"]:focus-visible {
 
 /* When a table is wider than the screen, scroll it sideways. A scroll box turns off the
    sticky header, so this only applies at the widths where that tab's table does not fit.
-   Tabs have 3, 4, 5 or 8 tool columns; 3 and 4 always fit above the phone breakpoint. */
+   The columns include Flisk; 2, 3 and 4 always fit above the phone breakpoint. */
 @media (min-width: 821px) and (max-width: 57rem) {
   .table-wrap[data-cols="5"] { overflow-x: auto; border-radius: var(--r-card); }
   .table-wrap[data-cols="5"] .compare thead th { position: static; }
 }
+@media (min-width: 821px) and (max-width: 67rem) {
+  .table-wrap[data-cols="6"] { overflow-x: auto; border-radius: var(--r-card); }
+  .table-wrap[data-cols="6"] .compare thead th { position: static; }
+}
+@media (min-width: 821px) and (max-width: 76rem) {
+  .table-wrap[data-cols="7"] { overflow-x: auto; border-radius: var(--r-card); }
+  .table-wrap[data-cols="7"] .compare thead th { position: static; }
+}
 @media (min-width: 821px) and (max-width: 86rem) {
   .table-wrap[data-cols="8"] { overflow-x: auto; border-radius: var(--r-card); }
   .table-wrap[data-cols="8"] .compare thead th { position: static; }
+}
+@media (min-width: 821px) and (max-width: 95rem) {
+  .table-wrap[data-cols="9"] { overflow-x: auto; border-radius: var(--r-card); }
+  .table-wrap[data-cols="9"] .compare thead th { position: static; }
 }
 
 /* Phones and small tablets: one card per task, Flisk first. */
@@ -476,6 +569,8 @@ input[type="search"]:focus-visible {
   .wrap { padding: 0 0.9rem; }
 
   .toolbar { gap: 0.5rem; }
+  .add-menu { position: static; }
+  .add-list { left: 0; right: 0; width: auto; }
   input[type="search"] { flex: 1 1 100%; }
   /* Chip rows scroll sideways instead of stacking into a tall block. */
   .chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }

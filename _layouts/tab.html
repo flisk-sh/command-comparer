@@ -3,12 +3,7 @@ layout: default
 ---
 {%- include current-tab.html -%}
 {%- assign tool_count = cur_tab.tools | size -%}
-
-<nav class="tabs" aria-label="Comparisons">
-  {%- for t in site.data.tabs %}
-  <a class="tab" href="{% if t.id == 'overview' %}{{ '/' | relative_url }}{% else %}{{ '/' | append: t.id | append: '/' | relative_url }}{% endif %}"{% if t.id == page.tab %} aria-current="page"{% endif %}>{{ t.name }}</a>
-  {%- endfor %}
-</nav>
+{%- include tabs-nav.html current=page.tab -%}
 
 <section id="compare" class="compare-section" aria-labelledby="compare-title">
   <div class="top">
@@ -21,9 +16,21 @@ layout: default
     <div class="chips" role="group" aria-label="Tools shown" id="tools-toggle">
       {%- for tid in cur_tab.tools %}
       {%- assign tool = site.data.tools[tid] %}
-      <button type="button" class="chip{% if tid == 'flisk' %} chip-flisk{% endif %}" data-tool="{{ tid }}" aria-pressed="true"{% if tid == 'flisk' %} disabled aria-label="Flisk is always shown"{% endif %}>{{ tool.name }}</button>
+      <button type="button" class="chip chip-tool{% if tid == 'flisk' %} chip-flisk{% endif %}" data-tool="{{ tid }}" data-name="{{ tool.name }}" aria-pressed="true"{% if tid == 'flisk' %} disabled aria-label="Flisk is always shown"{% endif %}>{{ tool.name }}</button>
       {%- endfor %}
     </div>
+    <details class="add-menu">
+      <summary class="chip chip-add">+ Add tool</summary>
+      <div class="add-list">
+        <p class="add-hint">Opens a view with your tools and the new one, a table per tab that covers them.</p>
+        {%- for pair in site.data.tools %}
+          {%- assign tid = pair[0] %}
+          {%- unless cur_tab.tools contains tid %}
+          <a class="add-item" href="{{ '/pick/' | relative_url }}?tools={{ cur_tab.tools | join: ',' }},{{ tid }}"><span>{{ pair[1].name }}</span><small>{{ pair[1].tagline }}</small></a>
+          {%- endunless %}
+        {%- endfor %}
+      </div>
+    </details>
     <button type="button" class="chip chip-notes" id="notes-toggle" aria-pressed="false">Notes</button>
     <p class="count" id="count" role="status" aria-live="polite"></p>
   </div>
