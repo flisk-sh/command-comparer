@@ -2,7 +2,7 @@
 
 Side-by-side commands for [Flisk](https://flisk.sh), Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden, PM2 and more, across 12 tabs. Flisk is always the first column. Every cell links to the official docs behind it.
 
-Live site: <https://flisk-sh.github.io/command-comparer/>
+Live site: <https://cmd.flisk.sh/>
 
 Flisk runs a multi-service app on your computer. It does not deploy and it does not write Kubernetes manifests. Terraform and CDK provision real infrastructure, so their cells show the nearest command and mark it amber when the job is different. A cell that says "None" means the tool has no command for the task. We do not invent one.
 
@@ -115,7 +115,7 @@ bundle install
 bundle exec jekyll serve
 ```
 
-Open <http://localhost:4000/command-comparer/>.
+Open <http://localhost:4000/>.
 
 With Docker only:
 
@@ -128,7 +128,11 @@ docker run --rm -p 4000:4000 -v "$PWD":/site -w /site ruby:3.3 \
 
 Pushing to `main` runs `.github/workflows/site.yml`. It checks the data, builds with Jekyll and deploys with the official GitHub Pages actions. Pages is set to deploy from GitHub Actions (Settings, Pages, Source). Unlike CloudComparer, no personal access token or `gh-pages` branch is needed.
 
-If you move the site to a custom domain or a root URL, set `url` and `baseurl` in `_config.yml`.
+The site runs on the custom domain `cmd.flisk.sh`:
+
+- DNS (Cloudflare, zone `flisk.sh`): a `CNAME` record, name `cmd`, target `flisk-sh.github.io`, DNS only.
+- GitHub Pages (Settings, Pages): custom domain `cmd.flisk.sh`, Enforce HTTPS on. The `CNAME` file in the repo records the same name.
+- `_config.yml`: `url: https://cmd.flisk.sh` and an empty `baseurl`. If you serve the site under a path instead, set `baseurl` to that path.
 
 ## Licence
 
