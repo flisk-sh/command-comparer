@@ -1,6 +1,6 @@
 # Command Comparer
 
-Side-by-side commands for [Flisk](https://flisk.sh), Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden, PM2 and more, across 12 tabs. Flisk is always the first column. Every cell links to the official docs behind it.
+Side-by-side commands for [Flisk](https://flisk.sh), Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden, PM2 and more, across 16 tabs. Flisk is always the first column. Every cell links to the official docs behind it.
 
 Live site: <https://cmd.flisk.sh/>
 
@@ -19,11 +19,12 @@ The layout follows [CloudComparer](https://github.com/ilyas-it83/CloudComparer):
 
 ## Tabs
 
-The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus an overview and an agent-tools tab.
+The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus an overview and tabs for infrastructure as code, local services, databases, coding agents and agent tools.
 
 | Tab | Columns after Flisk |
 | --- | --- |
 | Overview | Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden, PM2 |
+| Infra as code | Terraform, OpenTofu, Pulumi, AWS CDK, CloudFormation |
 | Compose & Tilt | Docker Compose, Tilt |
 | Process runners | process-compose, Overmind, PM2 |
 | Kubernetes dev | Skaffold, DevSpace, Garden |
@@ -33,8 +34,11 @@ The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus a
 | Cloud workspaces | GitHub Codespaces, Coder |
 | Monorepo tools | Nx, Turborepo |
 | App frameworks | .NET Aspire, Encore |
+| Local services | LocalStack, Supabase CLI, Firebase emulators |
+| Databases | Prisma, Drizzle, Atlas, dbmate |
 | AI agents | LangGraph, Mastra |
 | Agent tools | Warp, Superset, skills.sh, Coder |
+| Coding agents | Claude Code, Codex, Cursor, Gemini CLI |
 
 ### Pick your own columns
 

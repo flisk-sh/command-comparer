@@ -8,6 +8,11 @@
   title: Flisk next to the usual tools
   blurb: Terraform and CDK provision infrastructure. Flisk only runs your app locally.
   tools: [flisk, terraform, cdk, compose, tilt, skaffold, garden, pm2]
+- id: iac
+  name: Infra as code
+  title: "Flisk vs Terraform, OpenTofu, Pulumi, CDK and CloudFormation"
+  blurb: These provision cloud infrastructure. Flisk runs your app locally and never provisions.
+  tools: [flisk, terraform, opentofu, pulumi, cdk, cloudformation]
 - id: compose-tilt
   name: Compose & Tilt
   title: Flisk vs Docker Compose and Tilt
@@ -53,6 +58,16 @@
   title: Flisk vs .NET Aspire and Encore
   blurb: Aspire and Encore are frameworks you adopt. Flisk needs no code changes.
   tools: [flisk, aspire, encore]
+- id: local-services
+  name: Local services
+  title: "Flisk vs LocalStack, Supabase CLI and Firebase emulators"
+  blurb: "These emulate cloud services locally. Flisk starts Postgres, NATS and Traefik beside your app."
+  tools: [flisk, localstack, supabase, firebase]
+- id: databases
+  name: Databases
+  title: "Flisk vs Prisma, Drizzle, Atlas and dbmate"
+  blurb: These define and run migrations. Flisk runs them in a migrator resource before the API starts.
+  tools: [flisk, prisma, drizzle, atlas, dbmate]
 - id: ai-agents
   name: AI agents
   title: Flisk vs LangGraph and Mastra
@@ -63,3 +78,8 @@
   title: Flisk vs Warp, Superset, skills.sh and Coder
   blurb: These help coding agents work. Flisk runs the stack the agent works on.
   tools: [flisk, warp, superset, skills, coder]
+- id: coding-agents
+  name: Coding agents
+  title: "Flisk vs Claude Code, Codex, Cursor and Gemini CLI"
+  blurb: These are the agents. Flisk gives them a stack to run and an MCP server to call.
+  tools: [flisk, claude-code, codex, cursor, gemini]

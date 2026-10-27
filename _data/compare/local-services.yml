@@ -1,0 +1,165 @@
+# Commands for the local-services tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: setup
+    task: Set up a project
+    keywords: init new create config
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      localstack:
+        cmd: lstk setup aws
+        status: partial
+        note: "Only writes an AWS CLI profile, no project files"
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/setup-and-maintenance/"
+      supabase:
+        cmd: supabase init
+        source: "https://supabase.com/docs/reference/cli/supabase-init"
+      firebase:
+        cmd: firebase init emulators
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: start
+    task: Start the local services
+    keywords: up run launch emulator
+    cells:
+      flisk:
+        cmd: flisk up
+        note: Also starts your app
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      localstack:
+        cmd: lstk start
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        cmd: supabase start
+        source: "https://supabase.com/docs/reference/cli/supabase-start"
+      firebase:
+        cmd: firebase emulators:start
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: stop
+    task: Stop them
+    keywords: down teardown
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      localstack:
+        cmd: lstk stop
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        cmd: supabase stop
+        source: "https://supabase.com/docs/reference/cli/supabase-stop"
+      firebase:
+        status: none
+        note: "Runs until manually terminated, there is no stop command"
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: status
+    task: Check status
+    keywords: ps health running state
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      localstack:
+        cmd: lstk status
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        cmd: supabase status
+        source: "https://supabase.com/docs/reference/cli/supabase-status"
+      firebase:
+        status: none
+        note: "Use curl localhost:4400/emulators to list running emulators"
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: logs
+    task: Read logs
+    keywords: output tail follow
+    cells:
+      flisk:
+        cmd: flisk logs
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      localstack:
+        cmd: lstk logs
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        status: none
+        source: "https://supabase.com/docs/reference/cli/introduction"
+      firebase:
+        status: none
+        note: "Emulator UI has a Logs tab, --log-verbosity limits output"
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: urls
+    task: Show service URLs
+    keywords: ports endpoints address
+    cells:
+      flisk:
+        cmd: flisk networks
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/networks.ts"
+      localstack:
+        cmd: lstk status
+        status: partial
+        note: "Shows the endpoint as host:port, not per-service URLs"
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        cmd: supabase status
+        note: Prints the API, DB and Studio URLs
+        source: "https://supabase.com/docs/reference/cli/supabase-status"
+      firebase:
+        status: none
+        note: "Emulator UI defaults to port 4000, other ports are in the CLI log"
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: toggle
+    task: Choose which services run
+    keywords: only exclude enable disable optional
+    cells:
+      flisk:
+        cmd: flisk config enable-infra monitoring
+        note: "Optional services only, such as monitoring"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts"
+      localstack:
+        status: none
+        note: "Set SERVICES in an env profile in config.toml"
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/configuration/"
+      supabase:
+        cmd: supabase start -x studio
+        note: Excludes the named containers at start
+        source: "https://supabase.com/docs/reference/cli/supabase-start"
+      firebase:
+        cmd: firebase emulators:start --only firestore
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"
+  - id: reset
+    task: Reset the data
+    keywords: wipe clean fresh state
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      localstack:
+        cmd: lstk reset
+        note: "Clears in-memory state, AWS emulator only"
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/lifecycle-commands/"
+      supabase:
+        cmd: supabase db reset
+        note: Database only, reapplies migrations and seed
+        source: "https://supabase.com/docs/reference/cli/supabase-db-reset"
+      firebase:
+        status: none
+        note: "Firestore emulator clears data on shutdown, restart without --import"
+        source: "https://firebase.google.com/docs/emulator-suite/connect_firestore"
+  - id: diagnose
+    task: Diagnose the setup
+    keywords: doctor debug check
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      localstack:
+        cmd: lstk doctor
+        source: "https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/doctor/"
+      supabase:
+        status: none
+        source: "https://supabase.com/docs/reference/cli/introduction"
+      firebase:
+        status: none
+        source: "https://firebase.google.com/docs/emulator-suite/install_and_configure"

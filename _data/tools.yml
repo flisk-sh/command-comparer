@@ -143,3 +143,73 @@ skills:
   tagline: Agent skills directory
   site: https://skills.sh
   docs: https://github.com/vercel-labs/skills/blob/main/docs/commands.md
+claude-code:
+  name: Claude Code
+  tagline: Coding agent CLI
+  site: https://claude.com/product/claude-code
+  docs: https://code.claude.com/docs/en/cli-reference
+codex:
+  name: Codex
+  tagline: Coding agent CLI
+  site: https://learn.chatgpt.com/docs
+  docs: https://learn.chatgpt.com/docs/developer-commands?surface=cli
+cursor:
+  name: Cursor
+  tagline: Editor and agent CLI
+  site: https://cursor.com
+  docs: https://cursor.com/docs/cli/reference/parameters
+gemini:
+  name: Gemini CLI
+  tagline: Coding agent CLI
+  site: https://geminicli.com
+  docs: https://geminicli.com/docs/cli/cli-reference/
+localstack:
+  name: LocalStack
+  tagline: Local AWS
+  site: https://www.localstack.cloud
+  docs: https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/
+supabase:
+  name: Supabase CLI
+  tagline: Local backend stack
+  site: https://supabase.com
+  docs: https://supabase.com/docs/reference/cli/introduction
+firebase:
+  name: Firebase emulators
+  tagline: Local Google services
+  site: https://firebase.google.com
+  docs: https://firebase.google.com/docs/emulator-suite/install_and_configure
+prisma:
+  name: Prisma
+  tagline: Schema and migrations (v8 RC)
+  site: https://www.prisma.io
+  docs: https://www.prisma.io/docs/cli
+drizzle:
+  name: Drizzle
+  tagline: TypeScript ORM
+  site: https://orm.drizzle.team
+  docs: https://orm.drizzle.team/docs/kit-overview
+atlas:
+  name: Atlas
+  tagline: Schema as code
+  site: https://atlasgo.io
+  docs: https://atlasgo.io/cli-reference
+dbmate:
+  name: dbmate
+  tagline: SQL migrations
+  site: https://github.com/amacneil/dbmate
+  docs: https://github.com/amacneil/dbmate#readme
+opentofu:
+  name: OpenTofu
+  tagline: Open Terraform fork
+  site: https://opentofu.org
+  docs: https://opentofu.org/docs/cli/commands/
+pulumi:
+  name: Pulumi
+  tagline: Infrastructure in code
+  site: https://www.pulumi.com
+  docs: https://www.pulumi.com/docs/iac/cli/commands/
+cloudformation:
+  name: CloudFormation
+  tagline: AWS templates
+  site: https://aws.amazon.com/cloudformation/
+  docs: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/

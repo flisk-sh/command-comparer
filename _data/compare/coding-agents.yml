@@ -1,0 +1,194 @@
+# Commands for the coding-agents tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: connect
+    task: Connect the agent to a tool (MCP)
+    keywords: mcp add server claude cursor codex
+    cells:
+      flisk:
+        cmd:
+          - flisk connect claude
+          - flisk connect codex
+          - flisk connect cursor
+        note: Writes the MCP entry and Flisk skills
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/connect.ts"
+      claude-code:
+        cmd: "claude mcp add --transport http my-server https://example.com/mcp"
+        source: "https://code.claude.com/docs/en/mcp"
+      codex:
+        cmd: "codex mcp add my-server --url https://example.com/mcp"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        status: "none"
+        note: "Edit .cursor/mcp.json or ~/.cursor/mcp.json"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: "gemini mcp add my-server https://example.com/mcp --transport http"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: serve
+    task: Run an MCP server for agents
+    keywords: mcp serve stdio server
+    cells:
+      flisk:
+        cmd: flisk mcp
+        note: "Serves the stack's tools over stdio"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/mcp.ts"
+      claude-code:
+        cmd: "claude mcp serve"
+        note: "Serves Claude Code's own tools over stdio"
+        source: "https://code.claude.com/docs/en/mcp"
+      codex:
+        status: "none"
+        note: "codex mcp-server was removed from the CLI"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        status: "none"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        status: "none"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: list
+    task: List connected MCP servers
+    keywords: mcp list
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      claude-code:
+        cmd: "claude mcp list"
+        source: "https://code.claude.com/docs/en/mcp"
+      codex:
+        cmd: "codex mcp list"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        cmd: "agent mcp list"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: "gemini mcp list"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: remove
+    task: Remove an MCP server
+    keywords: mcp remove delete
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      claude-code:
+        cmd: "claude mcp remove my-server"
+        source: "https://code.claude.com/docs/en/mcp"
+      codex:
+        cmd: "codex mcp remove my-server"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        status: "none"
+        note: "Edit mcp.json; agent mcp disable only stops loading"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: "gemini mcp remove my-server"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: headless
+    task: Run one task without the UI
+    keywords: print non-interactive headless exec prompt
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      claude-code:
+        cmd: 'claude -p "query"'
+        source: "https://code.claude.com/docs/en/cli-reference"
+      codex:
+        cmd: 'codex exec "prompt"'
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        cmd: 'agent -p "prompt"'
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: 'gemini -p "query"'
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: resume
+    task: Resume a session
+    keywords: continue resume history
+    cells:
+      flisk:
+        cmd: flisk agent sessions bot
+        status: partial
+        note: Lists sessions of an agent you build with Flisk
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/agent.ts"
+      claude-code:
+        cmd:
+          - "claude -c"
+          - "claude -r"
+        source: "https://code.claude.com/docs/en/cli-reference"
+      codex:
+        cmd:
+          - "codex resume"
+          - "codex resume --last"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        cmd:
+          - "agent resume"
+          - "agent ls"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: 'gemini -r "latest"'
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: run
+    task: Start the app the agent works on
+    keywords: up services stack
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      claude-code:
+        status: "none"
+        source: "https://code.claude.com/docs/en/cli-reference"
+      codex:
+        status: "none"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        status: "none"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        status: "none"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: update
+    task: Update the tool
+    keywords: upgrade self-update latest
+    cells:
+      flisk:
+        cmd: flisk upgrade
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/upgrade.ts"
+      claude-code:
+        cmd: "claude update"
+        source: "https://code.claude.com/docs/en/cli-reference"
+      codex:
+        cmd: "codex update"
+        note: "Only if the install supports self-update"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        cmd: "agent update"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        cmd: "gemini update"
+        source: "https://geminicli.com/docs/cli/cli-reference/"
+  - id: doctor
+    task: Check the setup
+    keywords: doctor diagnose health
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      claude-code:
+        cmd: "claude doctor"
+        source: "https://code.claude.com/docs/en/cli-reference"
+      codex:
+        cmd: "codex doctor"
+        source: "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
+      cursor:
+        cmd: "agent about"
+        status: "partial"
+        note: "Prints version, system and account info; no health checks"
+        source: "https://cursor.com/docs/cli/reference/parameters"
+      gemini:
+        status: "none"
+        source: "https://geminicli.com/docs/cli/cli-reference/"

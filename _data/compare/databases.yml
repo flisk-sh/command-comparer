@@ -1,0 +1,209 @@
+# Commands for the databases tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: setup
+    task: Add an ORM to a service
+    keywords: init schema orm prisma drizzle
+    cells:
+      flisk:
+        cmd:
+          - flisk resource api --type backend --feature prisma
+          - flisk resource api --type backend --feature drizzle
+        note: Prisma also adds a migrator resource
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      prisma:
+        cmd: prisma orm init
+        note: "In Prisma 7: prisma init"
+        source: "https://www.prisma.io/docs/cli/orm-init"
+      drizzle:
+        status: "none"
+        note: "Install drizzle-orm and drizzle-kit, then add drizzle.config.ts"
+        source: "https://orm.drizzle.team/docs/kit-overview"
+      atlas:
+        status: "na"
+        note: "Atlas is not an ORM, so there is nothing to add"
+        source: "https://atlasgo.io/cli-reference"
+      dbmate:
+        status: "na"
+        note: "dbmate is not an ORM, so there is nothing to add"
+        source: "https://github.com/amacneil/dbmate#commands"
+  - id: create
+    task: Create a migration from schema changes
+    keywords: generate diff new migration
+    cells:
+      flisk:
+        status: "none"
+        note: "Flisk runs migrations, it does not write them"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        cmd:
+          - prisma contract emit
+          - prisma migration plan
+        note: "In Prisma 7: prisma migrate dev, which also applies it"
+        source: "https://www.prisma.io/docs/orm/migrations/generating-a-migration"
+      drizzle:
+        cmd: drizzle-kit generate
+        source: "https://orm.drizzle.team/docs/drizzle-kit-generate"
+      atlas:
+        cmd: atlas migrate diff
+        note: "Needs --to and --dev-url, or --env"
+        source: "https://atlasgo.io/cli-reference#atlas-migrate-diff"
+      dbmate:
+        cmd: dbmate new
+        status: "partial"
+        note: "Creates an empty file; you write the SQL"
+        source: "https://github.com/amacneil/dbmate#creating-migrations"
+  - id: apply
+    task: Apply migrations
+    keywords: migrate deploy up run
+    cells:
+      flisk:
+        cmd: flisk up
+        note: The migrator runs before the API starts
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/CHANGELOG.md"
+      prisma:
+        cmd: prisma db migrate
+        note: "In Prisma 7: prisma migrate deploy"
+        source: "https://www.prisma.io/docs/cli/db-migrate"
+      drizzle:
+        cmd: drizzle-kit migrate
+        source: "https://orm.drizzle.team/docs/drizzle-kit-migrate"
+      atlas:
+        cmd: atlas migrate apply
+        source: "https://atlasgo.io/cli-reference#atlas-migrate-apply"
+      dbmate:
+        cmd: dbmate up
+        note: "Also creates the database if it is missing"
+        source: "https://github.com/amacneil/dbmate#running-migrations"
+  - id: status
+    task: See migration status
+    keywords: info pending applied
+    cells:
+      flisk:
+        cmd: flisk status
+        status: partial
+        note: "Shows the migrator resource, not each migration"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      prisma:
+        cmd: prisma migration status
+        note: "In Prisma 7: prisma migrate status"
+        source: "https://www.prisma.io/docs/cli/migration-status"
+      drizzle:
+        status: "none"
+        source: "https://orm.drizzle.team/docs/kit-overview"
+      atlas:
+        cmd: atlas migrate status
+        source: "https://atlasgo.io/cli-reference#atlas-migrate-status"
+      dbmate:
+        cmd: dbmate status
+        source: "https://github.com/amacneil/dbmate#commands"
+  - id: reset
+    task: Reset the database
+    keywords: drop clean wipe
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        status: "none"
+        note: "Not in Prisma 8. In Prisma 7: prisma migrate reset"
+        source: "https://www.prisma.io/docs/orm/coming-from-prisma-orm-7#commands"
+      drizzle:
+        status: "none"
+        source: "https://orm.drizzle.team/docs/kit-overview"
+      atlas:
+        cmd: atlas schema clean
+        note: "Removes every object; run migrate apply to rebuild"
+        source: "https://atlasgo.io/cli-reference#atlas-schema-clean"
+      dbmate:
+        cmd:
+          - dbmate drop
+          - dbmate up
+        note: "No reset command: drop the database, then recreate it"
+        source: "https://github.com/amacneil/dbmate#connecting-to-the-database"
+  - id: studio
+    task: Browse the data
+    keywords: gui studio explore
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        status: "none"
+        note: "Not in Prisma 8. In Prisma 7: prisma studio"
+        source: "https://www.prisma.io/docs/orm/coming-from-prisma-orm-7#commands"
+      drizzle:
+        cmd: drizzle-kit studio
+        source: "https://orm.drizzle.team/docs/drizzle-kit-studio"
+      atlas:
+        status: "none"
+        source: "https://atlasgo.io/cli-reference"
+      dbmate:
+        status: "none"
+        source: "https://github.com/amacneil/dbmate#commands"
+  - id: pull
+    task: Read the schema from a database
+    keywords: introspect inspect pull
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        cmd: prisma contract infer
+        note: "In Prisma 7: prisma db pull"
+        source: "https://www.prisma.io/docs/cli/contract-infer"
+      drizzle:
+        cmd: drizzle-kit pull
+        source: "https://orm.drizzle.team/docs/drizzle-kit-pull"
+      atlas:
+        cmd: atlas schema inspect
+        source: "https://atlasgo.io/cli-reference#atlas-schema-inspect"
+      dbmate:
+        cmd: dbmate dump
+        note: "Writes the schema to db/schema.sql"
+        source: "https://github.com/amacneil/dbmate#exporting-schema-file"
+  - id: validate
+    task: Check migrations
+    keywords: lint validate verify check
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        cmd: prisma migration check
+        note: "Detects hand-edited or deleted migration files"
+        source: "https://www.prisma.io/docs/orm/migrations/applying-a-migration"
+      drizzle:
+        cmd: drizzle-kit check
+        note: "Checks generated migrations for collisions"
+        source: "https://orm.drizzle.team/docs/drizzle-kit-check"
+      atlas:
+        cmd:
+          - atlas migrate lint
+          - atlas migrate validate
+        note: "lint analyzes changes; validate checks checksum and SQL"
+        source: "https://atlasgo.io/cli-reference#atlas-migrate-lint"
+      dbmate:
+        status: "none"
+        source: "https://github.com/amacneil/dbmate#commands"
+  - id: seed
+    task: Seed data
+    keywords: fixtures sample
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      prisma:
+        status: "none"
+        note: "Not in Prisma 8. In Prisma 7: prisma db seed"
+        source: "https://www.prisma.io/docs/orm/coming-from-prisma-orm-7#commands"
+      drizzle:
+        status: "none"
+        note: "drizzle-seed is a library; call seed() from code"
+        source: "https://orm.drizzle.team/docs/seed-overview"
+      atlas:
+        status: "none"
+        source: "https://atlasgo.io/cli-reference"
+      dbmate:
+        status: "none"
+        source: "https://github.com/amacneil/dbmate#commands"

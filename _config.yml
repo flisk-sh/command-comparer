@@ -4,7 +4,7 @@ title: Command Comparer
 tagline: Flisk next to the tools people use for the same jobs
 description: >-
   Side-by-side commands for Flisk, Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden,
-  PM2 and more, across 12 tabs, with a source link for every cell.
+  PM2 and more, across 16 tabs, with a source link for every cell.
 lang: en
 
 # Custom domain cmd.flisk.sh (DNS on Cloudflare, CNAME to flisk-sh.github.io), served from the root.

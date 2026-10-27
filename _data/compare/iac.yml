@@ -1,0 +1,258 @@
+# Commands for the iac tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: init
+    task: Create a project
+    keywords: init new scaffold
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        status: partial
+        note: "A local dev project, not infrastructure"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      terraform:
+        cmd: terraform init
+        status: "partial"
+        note: "Sets up a directory of existing .tf files; no scaffold"
+        source: "https://developer.hashicorp.com/terraform/cli/commands/init"
+      opentofu:
+        cmd: tofu init
+        status: "partial"
+        note: "Sets up a directory of existing .tf files; no scaffold"
+        source: "https://opentofu.org/docs/cli/commands/init/"
+      pulumi:
+        cmd: pulumi new
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_new/"
+      cdk:
+        cmd: cdk init app --language=typescript
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-init.html"
+      cloudformation:
+        status: "none"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html"
+  - id: validate
+    task: Validate the config
+    keywords: lint check verify synth
+    cells:
+      flisk:
+        cmd: flisk config verify
+        status: partial
+        note: Checks generated local files
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts"
+      terraform:
+        cmd: terraform validate
+        source: "https://developer.hashicorp.com/terraform/cli/commands/validate"
+      opentofu:
+        cmd: tofu validate
+        source: "https://opentofu.org/docs/cli/commands/validate/"
+      pulumi:
+        cmd: pulumi preview
+        status: "partial"
+        note: "No validate command; preview runs the program and changes nothing"
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_preview/"
+      cdk:
+        cmd: cdk synth
+        note: "Also validates the templates by default"
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-synth.html"
+      cloudformation:
+        cmd: "aws cloudformation validate-template --template-body file://template.yaml"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html"
+  - id: preview
+    task: Preview changes
+    keywords: plan diff dry run what-if
+    cells:
+      flisk:
+        cmd: flisk up --dry-run
+        status: partial
+        note: Shows what would start locally
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      terraform:
+        cmd: terraform plan
+        source: "https://developer.hashicorp.com/terraform/cli/commands/plan"
+      opentofu:
+        cmd: tofu plan
+        source: "https://opentofu.org/docs/cli/commands/plan/"
+      pulumi:
+        cmd: pulumi preview
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_preview/"
+      cdk:
+        cmd: cdk diff
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-diff.html"
+      cloudformation:
+        cmd: aws cloudformation deploy --stack-name my-stack --template-file template.yaml --no-execute-changeset
+        note: "Creates a change set and stops without executing it"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy.html"
+  - id: apply
+    task: Apply changes
+    keywords: deploy up create provision
+    cells:
+      flisk:
+        cmd: flisk up
+        status: partial
+        note: "Starts local services, provisions nothing"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      terraform:
+        cmd: terraform apply
+        source: "https://developer.hashicorp.com/terraform/cli/commands/apply"
+      opentofu:
+        cmd: tofu apply
+        source: "https://opentofu.org/docs/cli/commands/apply/"
+      pulumi:
+        cmd: pulumi up
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_up/"
+      cdk:
+        cmd: cdk deploy
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-deploy.html"
+      cloudformation:
+        cmd: aws cloudformation deploy --stack-name my-stack --template-file template.yaml
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy.html"
+  - id: destroy
+    task: Tear everything down
+    keywords: delete remove destroy down
+    cells:
+      flisk:
+        cmd: flisk down
+        status: partial
+        note: Stops local services
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      terraform:
+        cmd: terraform destroy
+        source: "https://developer.hashicorp.com/terraform/cli/commands/destroy"
+      opentofu:
+        cmd: tofu destroy
+        source: "https://opentofu.org/docs/cli/commands/destroy/"
+      pulumi:
+        cmd: pulumi destroy
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_destroy/"
+      cdk:
+        cmd: cdk destroy
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-destroy.html"
+      cloudformation:
+        cmd: aws cloudformation delete-stack --stack-name my-stack
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/delete-stack.html"
+  - id: outputs
+    task: Read outputs
+    keywords: output values endpoints urls
+    cells:
+      flisk:
+        cmd: flisk networks
+        status: partial
+        note: Local service URLs
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/networks.ts"
+      terraform:
+        cmd: terraform output
+        source: "https://developer.hashicorp.com/terraform/cli/commands/output"
+      opentofu:
+        cmd: tofu output
+        source: "https://opentofu.org/docs/cli/commands/output/"
+      pulumi:
+        cmd: pulumi stack output
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_stack_output/"
+      cdk:
+        cmd: cdk deploy --outputs-file outputs.json
+        status: "partial"
+        note: "Writes outputs after a deploy; no read-only command"
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-deploy.html"
+      cloudformation:
+        cmd: aws cloudformation describe-stacks --stack-name my-stack
+        note: "Outputs are a field of the stack description"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-stacks.html"
+  - id: state
+    task: List what exists
+    keywords: state list resources stack
+    cells:
+      flisk:
+        cmd: flisk status
+        status: partial
+        note: Local services only
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      terraform:
+        cmd: terraform state list
+        source: "https://developer.hashicorp.com/terraform/cli/commands/state/list"
+      opentofu:
+        cmd: tofu state list
+        source: "https://opentofu.org/docs/cli/commands/state/list/"
+      pulumi:
+        cmd: pulumi stack --show-urns
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_stack/"
+      cdk:
+        cmd: cdk list
+        status: "partial"
+        note: "Lists stacks in the app, not deployed resources"
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-list.html"
+      cloudformation:
+        cmd: aws cloudformation list-stack-resources --stack-name my-stack
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/list-stack-resources.html"
+  - id: import
+    task: Adopt existing resources
+    keywords: import existing brownfield
+    cells:
+      flisk:
+        cmd: flisk import ./my-app
+        status: partial
+        note: "Reads a docker-compose.yml, not cloud resources"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md#flisk-import-dir"
+      terraform:
+        cmd: terraform import aws_instance.foo i-abcd1234
+        source: "https://developer.hashicorp.com/terraform/cli/commands/import"
+      opentofu:
+        cmd: tofu import aws_instance.foo i-abcd1234
+        source: "https://opentofu.org/docs/cli/commands/import/"
+      pulumi:
+        cmd: "pulumi import 'aws:iam/user:User' name id"
+        source: "https://www.pulumi.com/docs/iac/cli/commands/pulumi_import/"
+      cdk:
+        cmd: cdk import
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-import.html"
+      cloudformation:
+        cmd: "aws cloudformation create-change-set --stack-name my-stack --change-set-name my-import --template-body file://template.yaml --change-set-type IMPORT"
+        note: "Also needs --resources-to-import; then execute the change set"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-change-set.html"
+  - id: format
+    task: Format the code
+    keywords: fmt format lint style
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      terraform:
+        cmd: terraform fmt
+        source: "https://developer.hashicorp.com/terraform/cli/commands/fmt"
+      opentofu:
+        cmd: tofu fmt
+        source: "https://opentofu.org/docs/cli/commands/fmt/"
+      pulumi:
+        status: "none"
+        source: "https://www.pulumi.com/docs/iac/cli/commands/"
+      cdk:
+        status: "none"
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html"
+      cloudformation:
+        status: "none"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html"
+  - id: watch
+    task: Redeploy on file changes
+    keywords: watch live reload hot
+    cells:
+      flisk:
+        cmd: flisk up
+        status: partial
+        note: Live reload for local services
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      terraform:
+        status: "none"
+        source: "https://developer.hashicorp.com/terraform/cli/commands"
+      opentofu:
+        status: "none"
+        source: "https://opentofu.org/docs/cli/commands/"
+      pulumi:
+        status: "none"
+        note: "Not in the CLI command reference"
+        source: "https://www.pulumi.com/docs/iac/cli/commands/"
+      cdk:
+        cmd: cdk watch
+        source: "https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-watch.html"
+      cloudformation:
+        status: "none"
+        source: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html"
