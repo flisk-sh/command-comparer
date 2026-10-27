@@ -4,6 +4,15 @@ Side-by-side commands for [Flisk](https://flisk.sh), Terraform, AWS CDK, Docker 
 
 Live site: <https://cmd.flisk.sh/>
 
+<p align="center">
+  <a href="https://cmd.flisk.sh/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+      <img alt="The Overview tab of Command Comparer: Flisk, Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden and PM2 side by side, with one command per cell and a tab for each comparison" src="docs/screenshot-light.png">
+    </picture>
+  </a>
+</p>
+
 Flisk runs a multi-service app on your computer. It does not deploy and it does not write Kubernetes manifests. Terraform and CDK provision real infrastructure, so their cells show the nearest command and mark it amber when the job is different. A cell that says "None" means the tool has no command for the task. We do not invent one.
 
 The layout follows [CloudComparer](https://github.com/ilyas-it83/CloudComparer): a Jekyll site that renders YAML data into a table, published on GitHub Pages. Here each tab is its own page.
@@ -46,6 +55,7 @@ The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus a
 | `index.html` | The home page, the Overview tab |
 | `_layouts/tab.html`, `_includes/cell.html`, `_includes/cmd.html` | How a tab, a cell and a command render |
 | `assets/css/style.css`, `assets/js/compare.js` | Light and dark themes, phone card layout, search, tool chips, copy buttons |
+| `docs/` | The README screenshots of the live site (not published on the site) |
 | `scripts/check-data.rb` | Checks the data (see below) |
 | `.github/workflows/site.yml` | Checks, builds and deploys to GitHub Pages |
 | `.github/workflows/links.yml` | Weekly check that every source URL still loads |

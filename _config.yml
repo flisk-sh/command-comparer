@@ -37,5 +37,6 @@ exclude:
   - README.md
   - LICENSE
   - scripts/
+  - docs/
   - vendor/
   - node_modules/
