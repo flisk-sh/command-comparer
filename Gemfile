@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3.0"
+gem "jekyll", "~> 4.4.1"
 
 # Ruby 3.4+ removed these from default gems
 gem "csv"
