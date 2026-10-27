@@ -13,7 +13,7 @@ Live site: <https://cmd.flisk.sh/>
   </a>
 </p>
 
-Flisk runs a multi-service app on your computer. It does not deploy and it does not write Kubernetes manifests. Terraform and CDK provision real infrastructure, so their cells show the nearest command and mark it amber when the job is different. A cell that says "None" means the tool has no command for the task. We do not invent one.
+Flisk runs a multi-service app on your computer. It does not deploy and it does not write Kubernetes manifests. Terraform and CDK provision real infrastructure, so their cells show the nearest command and mark it amber when the job is different. A blank cell means the tool has no command for the task. We do not invent one. Hover a cell for its source and note, and click a command to copy it.
 
 The layout follows [CloudComparer](https://github.com/ilyas-it83/CloudComparer): a Jekyll site that renders YAML data into a table, published on GitHub Pages. Here each tab is its own page.
 
@@ -92,8 +92,8 @@ tasks:
 | Field | Meaning |
 | --- | --- |
 | `cmd` | The command, as a string or a list of strings. Leave it out for `none` and `na`. |
-| `status` | `match` (default) does the same job. `partial` is the closest command but a different job (shown amber). `none` has no equivalent. `na` is not needed for this tool. |
-| `note` | Optional. Under 110 characters. Shown behind the cell's Note button. Required for `partial`. |
+| `status` | `match` (default) does the same job. `partial` is the closest command but a different job (shown amber). `none` has no equivalent (shown blank). `na` is not needed for this tool (also blank). |
+| `note` | Optional. Under 110 characters. Shown behind the cell's i icon or the Notes toggle. Required for `partial`. |
 | `source` | An `https` URL to the official docs or source. Required on every cell, including `none`. |
 
 Rules for the data:
