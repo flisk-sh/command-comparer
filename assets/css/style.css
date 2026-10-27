@@ -422,80 +422,85 @@ input[type="search"]:focus-visible {
 .compare th.col-flisk { border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
 .compare tbody tr:last-child td.col-flisk { border-bottom: 2px solid var(--accent-line); }
 
-.cell {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: 0.3rem;
-  row-gap: 0.25rem;
-  align-items: start;
-}
-.cell > * { grid-column: 1; min-width: 0; }
-.cell > .cell-links { grid-column: 2; grid-row: 1; }
-.cell > .cell-note { grid-column: 1 / -1; }
+/* A cell is plain text: the command, and nothing else until you point at it.
+   Click a command to copy it. Source and note icons appear on hover or keyboard focus. */
+.cell { position: relative; display: flex; flex-direction: column; gap: 0.2rem; min-height: 1.2rem; }
 .cell p { margin: 0; }
 
-.cmd { position: relative; width: 100%; }
+.cmd { position: relative; }
 .cmd code {
   display: block;
+  margin: 0 -0.2rem;
+  padding: 0 0.2rem;
   font-size: 0.75rem;
-  line-height: 1.35;
-  background: var(--code-bg);
-  border: 1px solid var(--line);
-  border-radius: var(--r-code);
-  padding: 0.12rem 0.4rem;
+  line-height: 1.4;
+  color: var(--text);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  border-radius: 4px;
+  cursor: copy;
+}
+.cmd code:hover { background: var(--surface-2); }
+.cmd.copied code { background: var(--accent-tint); }
+.cmd.copied::after {
+  content: "Copied";
+  position: absolute;
+  top: -0.1rem;
+  right: 0;
+  padding: 0 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: var(--r-pill);
 }
 
 /* A word is kept whole unless it is wider than the column, then it breaks anywhere. */
 .tok { display: inline-block; max-width: 100%; vertical-align: top; word-break: break-all; }
 
-/* The copy button floats over the command on hover or focus, so commands keep the full
-   column width. Touch screens have no hover, so there it is always shown and the code
-   leaves room for it. */
-.copy {
-  position: absolute;
-  top: 0.2rem;
-  right: 0.25rem;
-  font: inherit;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--muted);
-  background: var(--surface-2);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-pill);
-  padding: 0 0.5rem;
-  cursor: pointer;
-  opacity: 0;
-}
-.cmd:hover .copy, .copy:focus-visible { opacity: 1; }
-.copy:hover { color: var(--text); border-color: var(--accent-line); }
-@media (hover: none) {
-  .copy { opacity: 1; }
-  .cmd code { padding-right: 3.5rem; }
-}
-
 .cell-empty { font-weight: 500; color: var(--faint); font-size: 0.8125rem; }
 
-/* Amber: the closest command, but it does a different job. The sr-only text says so too. */
-.cell-partial .cmd code { border-color: var(--warn-text); background: var(--warn-bg); }
+/* Amber text: the closest command, but it does a different job. The sr-only text says so too. */
+.cell-partial .cmd code { color: var(--warn-text); }
 .cell-todo .cell-empty { color: var(--warn-text); }
 
 /* Notes are short explanations. With scripting on they start closed, so the table can be
-   scanned. The Notes chip opens all of them, and each cell's Note button opens one. */
+   scanned. The Notes chip opens all of them, and each cell's i icon opens one. */
 .cell-note { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; }
 .note-btn { display: none; }
 .js .compare .cell-note { display: none; }
 .js .compare.show-notes .cell-note,
 .js .compare .cell.open .cell-note { display: block; }
 
-/* The icon rail: an arrow that opens the source, and an i that opens the note. */
-.cell-links { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+/* The icon pill floats over the cell's top-right corner, only while you point at the cell
+   or tab into it. Phones have no hover, so there it stays visible, a little quieter. */
+.cell-links {
+  position: absolute;
+  top: -0.15rem;
+  right: -0.2rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.1rem;
+  padding: 0.1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.compare td:hover .cell-links,
+.cell:focus-within .cell-links,
+.cell.open .cell-links { opacity: 1; }
+@media (hover: none) {
+  .cell-links { opacity: 0.75; }
+}
 .cell-src, .js .note-btn {
   display: inline-grid;
   place-items: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
   padding: 0;
   font: inherit;
   font-size: 0.7rem;
@@ -504,13 +509,13 @@ input[type="search"]:focus-visible {
   color: var(--link);
   text-decoration: none;
   background: none;
-  border: 1px solid var(--line-strong);
+  border: 0;
   border-radius: 50%;
   cursor: pointer;
 }
 .js .note-btn { font-style: italic; font-family: Georgia, serif; }
-.cell-src:hover, .js .note-btn:hover { border-color: var(--accent-line); background: var(--surface-2); }
-.js .note-btn[aria-expanded="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.cell-src:hover, .js .note-btn:hover { background: var(--surface); }
+.js .note-btn[aria-expanded="true"] { color: var(--accent-ink); background: var(--accent); }
 
 .empty { padding: 2rem 1rem; text-align: center; color: var(--muted); }
 
@@ -653,6 +658,6 @@ input[type="search"]:focus-visible {
 }
 
 @media print {
-  .toolbar, .copy, .theme-toggle, .note-btn { display: none !important; }
+  .toolbar, .cell-links, .theme-toggle { display: none !important; }
   .js .compare .cell-note { display: block; }
 }

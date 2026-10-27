@@ -6,9 +6,9 @@
 <div class="cell cell-{{ status }}">
   {%- if status == "partial" -%}<span class="sr-only">Different job, closest command. </span>{%- endif -%}
   {%- if status == "none" -%}
-  <p class="cell-empty">None</p>
+  <span class="cell-empty sr-only">No equivalent</span>
   {%- elsif status == "na" -%}
-  <p class="cell-empty">Not needed</p>
+  <span class="cell-empty sr-only">Not needed</span>
   {%- elsif cell.cmd -%}
     {%- if cell.cmd[0] -%}
       {%- for c in cell.cmd -%}{% include cmd.html cmd=c %}{%- endfor -%}

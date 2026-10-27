@@ -131,18 +131,15 @@
   // --- Cells: the same markup the static pages use ------------------------
   function cmdEl(cmd) {
     var wrap = el("div", "cmd");
+    wrap.setAttribute("data-copy", cmd);
     var code = el("code");
+    code.title = "Click to copy";
     var words = cmd.split(" ");
     words.forEach(function (w, i) {
       code.appendChild(el("span", "tok", w));
       if (i < words.length - 1) code.appendChild(document.createTextNode(" "));
     });
     wrap.appendChild(code);
-    var b = el("button", "copy", "Copy");
-    b.type = "button";
-    b.setAttribute("data-copy", cmd);
-    b.setAttribute("aria-label", "Copy command");
-    wrap.appendChild(b);
     return wrap;
   }
 
@@ -152,9 +149,9 @@
     if (status === "partial") box.appendChild(srOnly("Different job, closest command. "));
 
     if (status === "none") {
-      box.appendChild(el("p", "cell-empty", "None"));
+      box.appendChild(el("span", "cell-empty sr-only", "No equivalent"));
     } else if (status === "na") {
-      box.appendChild(el("p", "cell-empty", "Not needed"));
+      box.appendChild(el("span", "cell-empty sr-only", "Not needed"));
     } else {
       var cmds = Array.isArray(cell.cmd) ? cell.cmd : (cell.cmd ? [cell.cmd] : []);
       cmds.forEach(function (c) { box.appendChild(cmdEl(String(c))); });

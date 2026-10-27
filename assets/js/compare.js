@@ -57,23 +57,32 @@
     return ok;
   }
 
-  function flash(btn, label) {
-    var old = btn.textContent;
-    btn.textContent = label;
-    window.setTimeout(function () { btn.textContent = old; }, 1400);
+  // A polite live region tells screen readers a copy happened.
+  var live = document.createElement("div");
+  live.className = "sr-only";
+  live.setAttribute("role", "status");
+  document.body.appendChild(live);
+
+  function copied(box, ok, value) {
+    box.classList.add("copied");
+    live.textContent = ok ? "Copied " + value : "Could not copy. Select the text and press Ctrl+C.";
+    window.setTimeout(function () { box.classList.remove("copied"); }, 1200);
   }
 
   document.addEventListener("click", function (e) {
-    var copy = e.target.closest ? e.target.closest(".copy") : null;
-    if (copy) {
-      var value = copy.getAttribute("data-copy") || "";
+    // Click a command to copy it. Dragging to select text must not trigger a copy.
+    var box = e.target.closest ? e.target.closest(".cmd") : null;
+    if (box) {
+      var picked = window.getSelection ? String(window.getSelection()) : "";
+      if (picked) return;
+      var value = box.getAttribute("data-copy") || "";
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(value).then(
-          function () { flash(copy, "Copied"); },
-          function () { flash(copy, fallbackCopy(value) ? "Copied" : "Press Ctrl+C"); }
+          function () { copied(box, true, value); },
+          function () { copied(box, fallbackCopy(value), value); }
         );
       } else {
-        flash(copy, fallbackCopy(value) ? "Copied" : "Press Ctrl+C");
+        copied(box, fallbackCopy(value), value);
       }
       return;
     }
