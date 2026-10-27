@@ -1,0 +1,133 @@
+# Commands for the cloud-workspaces tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: create
+    task: Create a workspace
+    keywords: new machine
+    cells:
+      flisk:
+        status: "none"
+        note: Flisk runs on your own machine
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cloud-workspaces.md"
+      codespaces:
+        cmd: gh codespace create
+        source: "https://cli.github.com/manual/gh_codespace_create"
+      coder:
+        cmd: coder create my-workspace
+        source: "https://coder.com/docs/reference/cli/create"
+  - id: list
+    task: List workspaces
+    keywords: ls
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cloud-workspaces.md"
+      codespaces:
+        cmd: gh codespace list
+        source: "https://cli.github.com/manual/gh_codespace_list"
+      coder:
+        cmd: coder list
+        source: "https://coder.com/docs/reference/cli/list"
+  - id: shell
+    task: Open a shell
+    keywords: ssh connect
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cloud-workspaces.md"
+      codespaces:
+        cmd: gh codespace ssh
+        source: "https://cli.github.com/manual/gh_codespace_ssh"
+      coder:
+        cmd: coder ssh my-workspace
+        source: "https://coder.com/docs/reference/cli/ssh"
+  - id: start
+    task: Start
+    keywords: up resume
+    cells:
+      flisk:
+        cmd: flisk up
+        note: "Starts your services, not a machine"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      codespaces:
+        cmd: gh codespace code
+        status: "partial"
+        note: "No start command; this resumes it and opens VS Code"
+        source: "https://docs.github.com/en/codespaces/developing-in-a-codespace/stopping-and-starting-a-codespace"
+      coder:
+        cmd: coder start my-workspace
+        source: "https://coder.com/docs/reference/cli/start"
+  - id: stop
+    task: Stop
+    keywords: pause down
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      codespaces:
+        cmd: gh codespace stop
+        source: "https://cli.github.com/manual/gh_codespace_stop"
+      coder:
+        cmd: coder stop my-workspace
+        source: "https://coder.com/docs/reference/cli/stop"
+  - id: ports
+    task: Forward a port
+    keywords: tunnel expose preview
+    cells:
+      flisk:
+        status: "none"
+        note: Localhost only by default
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cloud-workspaces.md"
+      codespaces:
+        cmd: gh codespace ports forward 8080:8080
+        source: "https://cli.github.com/manual/gh_codespace_ports_forward"
+      coder:
+        cmd: coder port-forward my-workspace --tcp 8080:8080
+        source: "https://coder.com/docs/reference/cli/port-forward"
+  - id: delete
+    task: Delete
+    keywords: remove destroy
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cloud-workspaces.md"
+      codespaces:
+        cmd: gh codespace delete
+        source: "https://cli.github.com/manual/gh_codespace_delete"
+      coder:
+        cmd: coder delete my-workspace
+        source: "https://coder.com/docs/reference/cli/delete"
+  - id: logs
+    task: Read logs
+    keywords: output tail
+    cells:
+      flisk:
+        cmd: flisk logs
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      codespaces:
+        cmd: gh codespace logs
+        status: "partial"
+        note: "Shows the creation log, not your app's logs"
+        source: "https://docs.github.com/en/codespaces/troubleshooting/github-codespaces-logs"
+      coder:
+        cmd: coder logs my-workspace
+        status: "partial"
+        note: "Workspace build logs, not per-service app logs"
+        source: "https://coder.com/docs/reference/cli/logs"
+  - id: check
+    task: Diagnose
+    keywords: doctor
+    cells:
+      flisk:
+        cmd: flisk doctor
+        note: Detects Codespaces
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      codespaces:
+        status: "none"
+        note: "Closest is gh codespace logs, the creation log"
+        source: "https://cli.github.com/manual/gh_codespace"
+      coder:
+        cmd: coder support bundle my-workspace
+        status: "partial"
+        note: "Writes a troubleshooting bundle for connection problems"
+        source: "https://coder.com/docs/reference/cli/support_bundle"

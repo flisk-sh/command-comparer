@@ -1,0 +1,136 @@
+# Commands for the dev-environments tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: init
+    task: Create the config
+    keywords: init new template
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        note: "Creates the project, not a toolchain"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      devcontainers:
+        cmd: devcontainer templates apply -t ghcr.io/devcontainers/templates/debian
+        note: "Applies a published Template to the folder"
+        source: "https://github.com/devcontainers/cli/blob/main/docs/templates/apply.md"
+      devbox:
+        cmd: devbox init
+        note: "Creates an empty devbox.json"
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-init/"
+  - id: add
+    task: Add a tool or package
+    keywords: install node go cli
+    cells:
+      flisk:
+        status: "none"
+        note: flisk doctor only checks tools
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/dev-environments.md"
+      devcontainers:
+        status: "none"
+        note: "Features are listed by hand in devcontainer.json"
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        cmd: devbox add ripgrep
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-add/"
+  - id: enter
+    task: Enter the environment
+    keywords: shell up open
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      devcontainers:
+        cmd: devcontainer up --workspace-folder .
+        status: "partial"
+        note: "Starts the container; it opens no shell"
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        cmd: devbox shell
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-shell/"
+  - id: run
+    task: Run one command in it
+    keywords: exec run
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      devcontainers:
+        cmd: devcontainer exec --workspace-folder . cargo run
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        cmd: "devbox run echo \"Hello World\""
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-run/"
+  - id: start
+    task: "Start the app's services"
+    keywords: up services
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      devcontainers:
+        cmd: devcontainer up --workspace-folder .
+        status: "partial"
+        note: "Starts the dev container, not your app's services"
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        cmd: devbox services up
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-services-up/"
+  - id: stop
+    task: Stop services
+    keywords: down
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      devcontainers:
+        status: "none"
+        note: "README lists devcontainer stop and down as not done"
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        cmd: devbox services stop
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-services-stop/"
+  - id: check
+    task: Check the machine
+    keywords: doctor diagnose
+    cells:
+      flisk:
+        cmd: flisk doctor
+        note: "Also detects dev containers, Codespaces and WSL2"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      devcontainers:
+        status: "none"
+        source: "https://github.com/devcontainers/cli/blob/main/README.md"
+      devbox:
+        status: "none"
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox/"
+  - id: build
+    task: Build an image
+    keywords: docker dockerfile
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/dev-environments.md"
+      devcontainers:
+        cmd: devcontainer build --workspace-folder .
+        source: "https://containers.dev/guide/prebuild"
+      devbox:
+        cmd: devbox generate dockerfile
+        status: "partial"
+        note: "Writes a Dockerfile; it does not build the image"
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-generate-dockerfile/"
+  - id: generate
+    task: Generate a devcontainer
+    keywords: devcontainer.json
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/dev-environments.md"
+      devcontainers:
+        cmd: devcontainer templates apply -t ghcr.io/devcontainers/templates/debian
+        note: "Writes .devcontainer/devcontainer.json from a Template"
+        source: "https://github.com/devcontainers/cli/blob/main/docs/templates/apply.md"
+      devbox:
+        cmd: devbox generate devcontainer
+        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-generate-devcontainer/"

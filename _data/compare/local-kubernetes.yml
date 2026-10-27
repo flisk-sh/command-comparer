@@ -1,0 +1,146 @@
+# Commands for the local-kubernetes tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: start
+    task: Start a local environment
+    keywords: create cluster up
+    cells:
+      flisk:
+        cmd: flisk up
+        note: "Starts your services, not a cluster"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      kind:
+        cmd: "kind create cluster"
+        source: "https://kind.sigs.k8s.io/docs/user/quick-start/"
+      minikube:
+        cmd: "minikube start"
+        source: "https://minikube.sigs.k8s.io/docs/commands/start/"
+  - id: stop
+    task: "Stop, keep state"
+    keywords: pause
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      kind:
+        status: none
+        source: "https://github.com/kubernetes-sigs/kind/blob/main/pkg/cmd/kind/root.go"
+      minikube:
+        cmd: "minikube stop"
+        source: "https://minikube.sigs.k8s.io/docs/commands/stop/"
+  - id: delete
+    task: Delete it
+    keywords: remove destroy teardown
+    cells:
+      flisk:
+        cmd: flisk down --prune-networks
+        note: "Also removes this project's unused networks"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      kind:
+        cmd: "kind delete cluster"
+        source: "https://kind.sigs.k8s.io/docs/user/quick-start/"
+      minikube:
+        cmd: "minikube delete"
+        source: "https://minikube.sigs.k8s.io/docs/commands/delete/"
+  - id: image
+    task: Use a local image
+    keywords: load build docker
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      kind:
+        cmd: "kind load docker-image my-app:latest"
+        source: "https://kind.sigs.k8s.io/docs/user/quick-start/"
+      minikube:
+        cmd: "minikube image load my-app:latest"
+        source: "https://minikube.sigs.k8s.io/docs/commands/image/"
+  - id: url
+    task: Open a service URL
+    keywords: ingress tunnel port address
+    cells:
+      flisk:
+        cmd: flisk networks
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/networks.ts"
+      kind:
+        status: none
+        note: "Use an ingress or LoadBalancer; see the kind guides."
+        source: "https://github.com/kubernetes-sigs/kind/blob/main/pkg/cmd/kind/root.go"
+      minikube:
+        cmd: "minikube service api"
+        source: "https://minikube.sigs.k8s.io/docs/commands/service/"
+  - id: logs
+    task: Read logs
+    keywords: output tail
+    cells:
+      flisk:
+        cmd: flisk logs
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      kind:
+        cmd: "kind export logs"
+        status: partial
+        note: "Exports cluster logs to a directory, not a live tail."
+        source: "https://kind.sigs.k8s.io/docs/user/quick-start/"
+      minikube:
+        cmd: "minikube logs"
+        status: partial
+        note: "Cluster logs for debugging minikube, not your code."
+        source: "https://minikube.sigs.k8s.io/docs/commands/logs/"
+  - id: status
+    task: Check status
+    keywords: state health
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      kind:
+        status: none
+        note: "Use kubectl cluster-info --context kind-kind."
+        source: "https://github.com/kubernetes-sigs/kind/blob/main/pkg/cmd/kind/root.go"
+      minikube:
+        cmd: "minikube status"
+        source: "https://minikube.sigs.k8s.io/docs/commands/status/"
+  - id: list
+    task: List clusters
+    keywords: profiles
+    cells:
+      flisk:
+        status: "none"
+        note: Flisk has no clusters
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/local-kubernetes.md"
+      kind:
+        cmd: "kind get clusters"
+        source: "https://kind.sigs.k8s.io/docs/user/quick-start/"
+      minikube:
+        cmd: "minikube profile list"
+        source: "https://minikube.sigs.k8s.io/docs/commands/profile/"
+  - id: kubeconfig
+    task: Connect kubectl
+    keywords: context kubeconfig
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/local-kubernetes.md"
+      kind:
+        cmd: "kind export kubeconfig"
+        source: "https://kind.sigs.k8s.io/docs/user/known-issues/"
+      minikube:
+        cmd: "minikube update-context"
+        status: partial
+        note: "Repairs a stale kubeconfig entry after an IP or port change."
+        source: "https://minikube.sigs.k8s.io/docs/commands/update-context/"
+  - id: diagnose
+    task: Diagnose the machine
+    keywords: doctor check
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      kind:
+        status: none
+        note: "No check command; `kind export logs` collects debug data."
+        source: "https://github.com/kubernetes-sigs/kind/blob/main/pkg/cmd/kind/root.go"
+      minikube:
+        status: none
+        note: "No check command; closest is `minikube logs`."
+        source: "https://minikube.sigs.k8s.io/docs/commands/"

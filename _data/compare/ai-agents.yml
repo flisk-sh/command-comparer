@@ -1,0 +1,136 @@
+# Commands for the ai-agents tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: create
+    task: Start an agent project
+    keywords: init new template scaffold
+    cells:
+      flisk:
+        cmd:
+          - flisk project agent-stack
+          - flisk init agent-stack
+        note: "Agent, tools, database and messaging"
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      langgraph:
+        cmd: "langgraph new my-app --template new-langgraph-project-python"
+        source: "https://docs.langchain.com/oss/python/langgraph/local-server"
+      mastra:
+        cmd: "npx create-mastra@latest my-app"
+        source: "https://mastra.ai/reference/cli/create-mastra"
+  - id: add
+    task: Add an agent
+    keywords: bot resource
+    cells:
+      flisk:
+        cmd: flisk resource bot --type agent
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      langgraph:
+        status: "none"
+        note: "Add the graph to langgraph.json by hand"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        status: "none"
+        note: "Agents are defined in code"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: mcp
+    task: Add an MCP server
+    keywords: tools mcp
+    cells:
+      flisk:
+        cmd: flisk resource tools --type mcp
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      langgraph:
+        status: "none"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        status: "none"
+        note: "mastra api mcp list only lists servers"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: dev
+    task: Run locally with a dev UI
+    keywords: dev studio playground up
+    cells:
+      flisk:
+        cmd: flisk up
+        note: Tilt UI shows the agent
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      langgraph:
+        cmd: "langgraph dev"
+        note: "Prints a Studio URL"
+        source: "https://docs.langchain.com/oss/python/langgraph/local-server"
+      mastra:
+        cmd: "mastra dev"
+        note: "Serves Studio"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: sessions
+    task: List agent sessions
+    keywords: threads checkpoints
+    cells:
+      flisk:
+        cmd: flisk agent sessions bot
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/agent.ts"
+      langgraph:
+        status: "none"
+        note: "Threads are served by the API, not the CLI"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        cmd: "mastra api thread list"
+        note: "Lists memory threads on a running server"
+        status: partial
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: build
+    task: Build for production
+    keywords: package bundle
+    cells:
+      flisk:
+        status: "none"
+        note: Local only. Flisk never deploys
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/ai-agents.md"
+      langgraph:
+        cmd: "langgraph build -t my-image"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        cmd: "mastra build"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: serve
+    task: Run the built agent
+    keywords: start up serve
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/ai-agents.md"
+      langgraph:
+        cmd: "langgraph up"
+        note: "Runs in Docker; builds the image unless --image is set"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        cmd: "mastra start"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: docker
+    task: Write a Dockerfile
+    keywords: container image
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/ai-agents.md"
+      langgraph:
+        cmd: "langgraph dockerfile Dockerfile"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        status: "none"
+        source: "https://mastra.ai/reference/cli/mastra"
+  - id: connect
+    task: Connect a coding agent
+    keywords: mcp claude cursor codex
+    cells:
+      flisk:
+        cmd: flisk connect claude
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/connect.ts"
+      langgraph:
+        status: "none"
+        source: "https://docs.langchain.com/langsmith/cli"
+      mastra:
+        cmd: "mastra init --mcp cursor"
+        status: "partial"
+        note: "Init flag; editors only: cursor, windsurf, vscode"
+        source: "https://mastra.ai/reference/cli/mastra"

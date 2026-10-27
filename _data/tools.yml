@@ -1,0 +1,145 @@
+# Every tool that appears as a column. A tab picks its columns from this list (see tabs.yml).
+#   name     Column title.
+#   tagline  Two or three words under the title. Says what the tool is for.
+#   site     Product home page.
+#   docs     Official command reference. The column title links here.
+flisk:
+  name: Flisk
+  tagline: Local dev stack
+  site: https://flisk.sh
+  docs: https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md
+terraform:
+  name: Terraform
+  tagline: Provisions infrastructure
+  site: https://developer.hashicorp.com/terraform
+  docs: https://developer.hashicorp.com/terraform/cli/commands
+cdk:
+  name: AWS CDK
+  tagline: AWS infrastructure in code
+  site: https://aws.amazon.com/cdk/
+  docs: https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html
+compose:
+  name: Docker Compose
+  tagline: Local containers
+  site: https://docs.docker.com/compose/
+  docs: https://docs.docker.com/reference/cli/docker/compose/
+tilt:
+  name: Tilt
+  tagline: Live-update loop
+  site: https://tilt.dev
+  docs: https://docs.tilt.dev/cli/tilt.html
+skaffold:
+  name: Skaffold
+  tagline: Kubernetes dev loop
+  site: https://skaffold.dev
+  docs: https://skaffold.dev/docs/references/cli/
+garden:
+  name: Garden
+  tagline: Dev and test on Kubernetes
+  site: https://garden.io
+  docs: https://docs.garden.io/reference/commands
+pm2:
+  name: PM2
+  tagline: Node process manager
+  site: https://pm2.keymetrics.io
+  docs: https://pm2.keymetrics.io/docs/usage/commands/
+process-compose:
+  name: process-compose
+  tagline: Process runner
+  site: https://f1bonacc1.github.io/process-compose/
+  docs: https://f1bonacc1.github.io/process-compose/cli/process-compose/
+overmind:
+  name: Overmind
+  tagline: Procfile runner
+  site: https://github.com/DarthSim/overmind
+  docs: https://github.com/DarthSim/overmind#readme
+devspace:
+  name: DevSpace
+  tagline: Kubernetes dev loop
+  site: https://www.devspace.sh
+  docs: https://www.devspace.sh/docs/cli
+kind:
+  name: kind
+  tagline: Kubernetes in Docker
+  site: https://kind.sigs.k8s.io
+  docs: https://kind.sigs.k8s.io/docs/user/quick-start/
+minikube:
+  name: minikube
+  tagline: Local Kubernetes
+  site: https://minikube.sigs.k8s.io
+  docs: https://minikube.sigs.k8s.io/docs/commands/
+telepresence:
+  name: Telepresence
+  tagline: Bridge to a cluster
+  site: https://telepresence.io
+  docs: https://telepresence.io/docs/reference/cli/telepresence
+mirrord:
+  name: mirrord
+  tagline: Run locally in the cluster
+  site: https://metalbear.com/mirrord/
+  docs: https://metalbear.com/mirrord/docs/getting-started/installing-mirrord/cli
+devcontainers:
+  name: Dev Containers
+  tagline: Containerized toolchain
+  site: https://containers.dev
+  docs: https://github.com/devcontainers/cli
+devbox:
+  name: Devbox
+  tagline: Nix-based toolchain
+  site: https://www.jetify.com/devbox
+  docs: https://www.jetify.com/docs/devbox/cli-reference/devbox/
+codespaces:
+  name: GitHub Codespaces
+  tagline: Cloud dev machine
+  site: https://github.com/features/codespaces
+  docs: https://cli.github.com/manual/gh_codespace
+coder:
+  name: Coder
+  tagline: Self-hosted workspaces
+  site: https://coder.com
+  docs: https://coder.com/docs/reference/cli
+nx:
+  name: Nx
+  tagline: Monorepo builds
+  site: https://nx.dev
+  docs: https://nx.dev/docs/reference/nx-commands
+turborepo:
+  name: Turborepo
+  tagline: Monorepo builds
+  site: https://turborepo.dev
+  docs: https://turborepo.dev/docs/reference
+aspire:
+  name: .NET Aspire
+  tagline: .NET app framework
+  site: https://aspire.dev
+  docs: https://aspire.dev/reference/cli/overview/
+encore:
+  name: Encore
+  tagline: Backend framework
+  site: https://encore.dev
+  docs: https://encore.dev/docs/cli/cli-reference
+langgraph:
+  name: LangGraph
+  tagline: Agent framework
+  site: https://www.langchain.com/langgraph
+  docs: https://docs.langchain.com/langsmith/cli
+mastra:
+  name: Mastra
+  tagline: Agent framework
+  site: https://mastra.ai
+  docs: https://mastra.ai/reference/cli/mastra
+warp:
+  name: Warp
+  tagline: Agentic terminal
+  site: https://www.warp.dev
+  docs: https://docs.warp.dev/agents/cli/oz-cli/
+superset:
+  name: Superset
+  tagline: Parallel coding agents
+  site: https://paradev.com
+  docs: https://docs.paradev.com/cli/cli-reference
+skills:
+  name: skills.sh
+  tagline: Agent skills directory
+  site: https://skills.sh
+  docs: https://github.com/vercel-labs/skills/blob/main/docs/commands.md

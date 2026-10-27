@@ -1,13 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Checks _data/commands.yml.
+# Checks the data in _data/ (tools.yml, tabs.yml, compare/<tab>.yml).
 #
-#   ruby scripts/check-data.rb            structure: every task has a cell per tool,
-#                                         every cell has an https source
-#   ruby scripts/check-data.rb --flisk    also run each Flisk command's subcommand and
-#                                         flags against the installed `flisk --help`
-#   ruby scripts/check-data.rb --links    also fetch every source URL and expect a 2xx
+#   ruby scripts/check-data.rb                 structure: every tab has a cell per task and tool,
+#                                              every cell has an https source, no TODO left
+#   ruby scripts/check-data.rb --tab ID        only that tab (repeat the flag for more)
+#   ruby scripts/check-data.rb --todo-ok       allow `TODO` placeholders (work in progress)
+#   ruby scripts/check-data.rb --flisk         also run each Flisk command's subcommand and
+#                                              flags against the installed `flisk --help`
+#   ruby scripts/check-data.rb --links         also fetch every source URL and expect a 2xx
 #
 # Exit code 1 when anything fails.
 
@@ -16,73 +18,116 @@ require "uri"
 require "net/http"
 require "open3"
 
-DATA = ENV["COMMANDS_YML"] || File.expand_path("../_data/commands.yml", __dir__)
+DATA_DIR = ENV["DATA_DIR"] || File.expand_path("../_data", __dir__)
 STATUSES = %w[match partial none na].freeze
+NOTE_MAX = 110
+BLURB_MAX = 100
 
 check_flisk = ARGV.include?("--flisk")
 check_links = ARGV.include?("--links")
+todo_ok = ARGV.include?("--todo-ok")
+only = ARGV.each_with_index.select { |a, _| a == "--tab" }.map { |_, i| ARGV[i + 1] }.compact
 
-data = YAML.safe_load(File.read(DATA))
 errors = []
 warnings = []
 
-tools = data.fetch("tools")
-tool_ids = tools.map { |t| t.fetch("id") }
-category_ids = data.fetch("categories").map { |c| c.fetch("id") }
+tools = YAML.safe_load(File.read(File.join(DATA_DIR, "tools.yml")))
+tabs = YAML.safe_load(File.read(File.join(DATA_DIR, "tabs.yml")))
+meta = YAML.safe_load(File.read(File.join(DATA_DIR, "meta.yml")))
 
-errors << "Flisk must be the first tool (found #{tool_ids.first.inspect})" unless tool_ids.first == "flisk"
-errors << "duplicate tool ids" unless tool_ids.uniq.size == tool_ids.size
-
-tools.each do |t|
-  %w[id name tagline site docs what scope why].each do |k|
-    errors << "tool #{t['id']}: missing #{k}" if t[k].to_s.strip.empty?
+tools.each do |id, t|
+  %w[name tagline site docs].each do |k|
+    errors << "tool #{id}: missing #{k}" if t[k].to_s.strip.empty?
   end
 end
 
-task_ids = data.fetch("tasks").map { |t| t["id"] }
-errors << "duplicate task ids" unless task_ids.uniq.size == task_ids.size
+tab_ids = tabs.map { |t| t["id"] }
+errors << "duplicate tab ids" unless tab_ids.uniq.size == tab_ids.size
+unknown_only = only - tab_ids
+errors << "--tab: unknown tab #{unknown_only.join(', ')}" unless unknown_only.empty?
+selected = only.empty? ? tabs : tabs.select { |t| only.include?(t["id"]) }
 
 def commands_of(cell)
   Array(cell["cmd"]).map(&:to_s)
 end
 
-data.fetch("tasks").each do |task|
-  id = task["id"]
-  errors << "task #{id}: unknown category #{task['category'].inspect}" unless category_ids.include?(task["category"])
-  errors << "task #{id}: missing task title" if task["task"].to_s.strip.empty?
-  cells = task["cells"] || {}
+todo_count = 0
+cell_count = 0
+task_count = 0
+data_by_tab = {}
 
-  extra = cells.keys - tool_ids
-  errors << "task #{id}: unknown tools #{extra.join(', ')}" unless extra.empty?
+selected.each do |tab|
+  tid = tab["id"]
+  %w[id name title blurb tools].each do |k|
+    errors << "tab #{tid}: missing #{k}" if tab[k].nil? || tab[k].to_s.strip.empty?
+  end
+  warnings << "tab #{tid}: blurb is #{tab['blurb'].to_s.size} chars, keep it under #{BLURB_MAX}" if tab["blurb"].to_s.size > BLURB_MAX
 
-  tool_ids.each do |tid|
-    cell = cells[tid]
-    where = "task #{id} / #{tid}"
-    if cell.nil?
-      errors << "#{where}: missing cell (use status: none for no equivalent)"
-      next
+  tab_tools = tab["tools"] || []
+  errors << "tab #{tid}: Flisk must be the first tool" unless tab_tools.first == "flisk"
+  errors << "tab #{tid}: duplicate tools" unless tab_tools.uniq.size == tab_tools.size
+  (tab_tools - tools.keys).each { |t| errors << "tab #{tid}: tool #{t} is not in tools.yml" }
+
+  path = File.join(DATA_DIR, "compare", "#{tid}.yml")
+  unless File.exist?(path)
+    errors << "tab #{tid}: missing #{path}"
+    next
+  end
+  data = YAML.safe_load(File.read(path))
+  data_by_tab[tid] = data
+  tasks = data["tasks"] || []
+  errors << "tab #{tid}: no tasks" if tasks.empty?
+  ids = tasks.map { |t| t["id"] }
+  errors << "tab #{tid}: duplicate task ids" unless ids.uniq.size == ids.size
+
+  tasks.each do |task|
+    task_count += 1
+    where_task = "#{tid} / #{task['id']}"
+    errors << "#{where_task}: missing task title" if task["task"].to_s.strip.empty?
+    cells = task["cells"] || {}
+
+    extra = cells.keys - tab_tools
+    errors << "#{where_task}: cells for tools not in this tab: #{extra.join(', ')}" unless extra.empty?
+
+    tab_tools.each do |tool|
+      cell_count += 1
+      cell = cells[tool]
+      where = "#{where_task} / #{tool}"
+
+      if cell.nil?
+        errors << "#{where}: missing cell (use status: none for no equivalent)"
+        next
+      end
+      if cell == "TODO"
+        todo_count += 1
+        errors << "#{where}: still TODO" unless todo_ok
+        next
+      end
+      unless cell.is_a?(Hash)
+        errors << "#{where}: cell must be a mapping"
+        next
+      end
+
+      status = cell["status"] || "match"
+      errors << "#{where}: bad status #{status.inspect}" unless STATUSES.include?(status)
+
+      begin
+        uri = URI.parse(cell["source"].to_s)
+        errors << "#{where}: source must be an https URL" unless uri.is_a?(URI::HTTPS) && uri.host
+      rescue URI::InvalidURIError
+        errors << "#{where}: source is not a valid URL"
+      end
+
+      cmds = commands_of(cell)
+      if %w[match partial].include?(status)
+        errors << "#{where}: status #{status} needs a cmd" if cmds.empty?
+      elsif !cmds.empty?
+        errors << "#{where}: status #{status} must not have a cmd"
+      end
+      errors << "#{where}: cmd entries must be non-empty, trimmed strings" if cmds.any? { |c| c.strip.empty? || c != c.strip }
+      errors << "#{where}: status partial needs a note saying why" if status == "partial" && cell["note"].to_s.strip.empty?
+      warnings << "#{where}: note is #{cell['note'].to_s.size} chars, keep it under #{NOTE_MAX}" if cell["note"].to_s.size > NOTE_MAX
     end
-
-    status = cell["status"] || "match"
-    errors << "#{where}: bad status #{status.inspect}" unless STATUSES.include?(status)
-
-    source = cell["source"].to_s
-    begin
-      uri = URI.parse(source)
-      errors << "#{where}: source must be an https URL" unless uri.is_a?(URI::HTTPS) && uri.host
-    rescue URI::InvalidURIError
-      errors << "#{where}: source is not a valid URL"
-    end
-
-    cmds = commands_of(cell)
-    if %w[match partial].include?(status)
-      errors << "#{where}: status #{status} needs a cmd" if cmds.empty?
-    elsif !cmds.empty?
-      errors << "#{where}: status #{status} must not have a cmd"
-    end
-
-    errors << "#{where}: status #{status} needs a note" if %w[none na partial].include?(status) && cell["note"].to_s.strip.empty?
-    errors << "#{where}: cmd entries must be non-empty strings" if cmds.any? { |c| c.strip.empty? }
   end
 end
 
@@ -100,45 +145,60 @@ if check_flisk
     errors << "--flisk: the flisk CLI is not on PATH"
   else
     installed = version_out.strip.split("\n").last.to_s.strip
-    expected = data.dig("checked", "flisk").to_s
+    expected = meta.dig("checked", "flisk").to_s
     warnings << "installed flisk is #{installed}, data was checked against #{expected}" unless installed == expected
 
     top, = run_flisk("--help")
     nested = { "config" => true, "agent" => true }
     help_cache = {}
+    seen = {}
 
-    data.fetch("tasks").each do |task|
-      commands_of(task["cells"]["flisk"]).each do |cmd|
-        where = "task #{task['id']} / flisk: `#{cmd}`"
-        tokens = cmd.split
-        unless tokens.shift == "flisk"
-          errors << "#{where}: must start with flisk"
-          next
-        end
+    data_by_tab.each do |tid, data|
+      data["tasks"].each do |task|
+        cell = task["cells"]["flisk"]
+        next unless cell.is_a?(Hash)
 
-        sub = tokens.first
-        if sub.nil? || sub.start_with?("-")
-          errors << "#{where}: needs a subcommand"
-          next
-        end
-        unless top =~ /^\s+(?:[\w-]+,\s*)*#{Regexp.escape(sub)}(?:,\s*[\w-]+)*\s{2,}/
-          errors << "#{where}: `flisk #{sub}` is not in `flisk --help`"
-          next
-        end
+        commands_of(cell).each do |cmd|
+          next if seen[cmd]
 
-        help_args = [sub, "--help"]
-        if nested[sub] && tokens[1] && !tokens[1].start_with?("-")
-          help_args = [sub, "help", tokens[1]]
-        end
-        help, = help_cache[help_args] ||= run_flisk(*help_args)
+          seen[cmd] = true
+          where = "#{tid} / #{task['id']} / flisk: `#{cmd}`"
+          tokens = cmd.split
+          first = tokens.shift
+          # skills are installed with npx, not flisk; only flisk commands are checked here
+          next if first == "npx"
 
-        if help.include?("could not run")
-          warnings << "#{where}: help is not available here (#{help.strip.lines.first.strip}); flags not checked"
-          next
-        end
+          unless first == "flisk"
+            errors << "#{where}: must start with flisk"
+            next
+          end
 
-        tokens.select { |t| t.start_with?("-") }.each do |flag|
-          errors << "#{where}: flag #{flag} not in `flisk #{help_args.join(' ')}`" unless help.include?(flag)
+          sub = tokens.first
+          if sub.nil? || sub.start_with?("-")
+            errors << "#{where}: needs a subcommand"
+            next
+          end
+          # A command or one of its aliases (such as `init` for `project`) prints its own
+          # "Usage: flisk project|init ..." line. An unknown word prints the root help instead.
+          sub_help, = help_cache[[sub, "--help"]] ||= run_flisk(sub, "--help")
+          unless sub_help.lines.first(3).any? { |l| l =~ /Usage: flisk (?:[\w-]+\|)*#{Regexp.escape(sub)}(?:\|[\w-]+)*\b/ } ||
+                 top =~ /^\s+(?:[\w-]+,\s*)*#{Regexp.escape(sub)}(?:,\s*[\w-]+)*\s{2,}/
+            errors << "#{where}: `flisk #{sub}` is not a flisk command"
+            next
+          end
+
+          help_args = [sub, "--help"]
+          help_args = [sub, "help", tokens[1]] if nested[sub] && tokens[1] && !tokens[1].start_with?("-")
+          help, = help_cache[help_args] ||= run_flisk(*help_args)
+
+          if help.include?("could not run")
+            warnings << "#{where}: help is not available here (#{help.strip.lines.first.strip}); flags not checked"
+            next
+          end
+
+          tokens.select { |t| t.start_with?("-") }.each do |flag|
+            errors << "#{where}: flag #{flag} not in `flisk #{help_args.join(' ')}`" unless help.include?(flag)
+          end
         end
       end
     end
@@ -148,8 +208,12 @@ end
 # --- Source URLs ---------------------------------------------------------------
 if check_links
   urls = []
-  tools.each { |t| urls << t["site"] << t["docs"] }
-  data["tasks"].each { |task| task["cells"].each_value { |c| urls << c["source"] } }
+  tools.each_value { |t| urls << t["site"] << t["docs"] }
+  data_by_tab.each_value do |data|
+    data["tasks"].each do |task|
+      task["cells"].each_value { |c| urls << c["source"] if c.is_a?(Hash) }
+    end
+  end
 
   def fetch_status(url, limit = 5)
     uri = URI.parse(url)
@@ -160,14 +224,13 @@ if check_links
     req = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => "command-comparer-link-check")
     res = http.request(req)
     if res.is_a?(Net::HTTPRedirection) && limit.positive?
-      target = URI.join(url, res["location"]).to_s
-      return fetch_status(target, limit - 1)
+      return fetch_status(URI.join(url, res["location"]).to_s, limit - 1)
     end
+
     res.code.to_i
   end
 
-  urls.compact.uniq.each do |url|
-    base = url.split("#").first
+  urls.compact.map { |u| u.split("#").first }.uniq.each do |base|
     code = nil
     3.times do
       begin
@@ -176,12 +239,13 @@ if check_links
         code = e.class.name
       end
       break if code.is_a?(Integer) && code < 400
+
       sleep 2
     end
     if code.is_a?(Integer) && code < 400
-      puts "ok   #{code} #{url}"
+      puts "ok   #{code} #{base}"
     else
-      errors << "link: #{url} returned #{code}"
+      errors << "link: #{base} returned #{code}"
     end
   end
 end
@@ -189,10 +253,12 @@ end
 warnings.each { |w| warn "warning: #{w}" }
 
 if errors.empty?
-  cells = data["tasks"].size * tool_ids.size
-  puts "OK: #{data['tasks'].size} tasks, #{tool_ids.size} tools, #{cells} cells, every cell has a source."
+  msg = "OK: #{selected.size} tabs, #{task_count} tasks, #{cell_count} cells"
+  msg += todo_ok ? " (#{todo_count} still TODO)." : ", every cell has a source."
+  puts msg
 else
   warn "#{errors.size} problem(s):"
-  errors.each { |e| warn "  - #{e}" }
+  errors.first(60).each { |e| warn "  - #{e}" }
+  warn "  ... and #{errors.size - 60} more" if errors.size > 60
   exit 1
 end

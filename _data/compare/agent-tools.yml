@@ -1,0 +1,189 @@
+# Commands for the agent-tools tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: skills
+    task: Install agent skills
+    keywords: skill add install
+    cells:
+      flisk:
+        cmd: npx skills add flisk-sh/flisk-skills
+        note: flisk connect also writes them
+        source: "https://github.com/flisk-sh/flisk-skills#readme"
+      warp:
+        status: "none"
+        note: "Use skills with --skill; no install command"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        cmd: "npx skills add paradevai/skills"
+        note: "Desktop app installs them automatically"
+        source: "https://docs.paradev.com/skills"
+      skills:
+        cmd: "npx skills add owner/repo"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        status: "none"
+        note: "Skills are SKILL.md files or set in the Agents UI"
+        source: "https://coder.com/docs/reference/cli"
+  - id: connect
+    task: Connect an agent to the tool
+    keywords: mcp claude cursor codex
+    cells:
+      flisk:
+        cmd: flisk connect claude
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/connect.ts"
+      warp:
+        status: "none"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        cmd: "claude mcp add superset --transport http https://api.superset.sh/mcp"
+        note: "Claude Code's own command; hosted MCP server"
+        source: "https://docs.paradev.com/mcp-server"
+      skills:
+        status: none
+        note: "Installs skills only. No MCP setup."
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        status: "none"
+        note: "Add coder exp mcp server to the client's MCP config by hand"
+        source: "https://coder.com/docs/reference/cli"
+  - id: mcp
+    task: Serve tools to an agent over MCP
+    keywords: mcp server
+    cells:
+      flisk:
+        cmd: flisk mcp
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/mcp.ts"
+      warp:
+        status: "none"
+        note: "oz only attaches MCP servers (--mcp, oz mcp list)"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        status: "na"
+        note: "Hosted at https://api.superset.sh/mcp; nothing to run"
+        source: "https://docs.paradev.com/mcp-server"
+      skills:
+        status: "na"
+        note: "Skills are files, not an MCP server"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        cmd: "coder exp mcp server"
+        note: "Experimental; stdio server"
+        source: "https://coder.com/docs/ai-coder/mcp-server"
+  - id: run
+    task: Start the app the agent works on
+    keywords: up services
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      warp:
+        status: "none"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        cmd: 'superset terminals create --workspace ws_… --command "bun run dev"'
+        status: "partial"
+        note: "Runs one command in a workspace terminal"
+        source: "https://docs.paradev.com/cli/cli-reference"
+      skills:
+        status: "na"
+        note: "Skills installer; it does not run apps"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        cmd: "coder start my-workspace"
+        status: "partial"
+        note: "Starts the workspace, not your app"
+        source: "https://coder.com/docs/reference/cli/start"
+  - id: sessions
+    task: See agent sessions
+    keywords: threads status
+    cells:
+      flisk:
+        cmd: flisk agent sessions bot
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/agent.ts"
+      warp:
+        cmd: "oz run list"
+        status: "partial"
+        note: "Lists cloud agent runs only"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        cmd: "superset snapshot"
+        note: "Live agents per workspace, not stored sessions"
+        status: partial
+        source: "https://docs.paradev.com/cli/cli-reference"
+      skills:
+        status: "na"
+        note: "Skills installer; no agent sessions"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        status: "none"
+        note: "Web UI or GET /chats; the Tasks CLI was removed"
+        source: "https://coder.com/docs/ai-coder/agents/tasks-to-chats-migration"
+  - id: parallel
+    task: "Run agents in parallel, isolated"
+    keywords: worktree workspace sandbox
+    cells:
+      flisk:
+        status: "none"
+        note: One stack per project
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      warp:
+        cmd: 'oz agent run-cloud --environment <ENVIRONMENT_ID> --prompt "..."'
+        status: "partial"
+        note: "Starts one cloud run per command, not on your machine"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        cmd: 'superset workspaces create --project prj_… --name "fix-login-bug" --branch fix/login-bug --local --agent claude --prompt "…"'
+        note: "Each workspace is its own git worktree"
+        source: "https://docs.paradev.com/cli/cli-reference"
+      skills:
+        status: "na"
+        note: "Skills installer; it does not run agents"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        cmd: "coder create my-workspace"
+        status: "partial"
+        note: "Creates a workspace; does not launch an agent"
+        source: "https://coder.com/docs/reference/cli/create"
+  - id: find
+    task: Find skills
+    keywords: search directory
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      warp:
+        cmd: "oz agent skills --repo owner/repo"
+        status: "partial"
+        note: "Lists skills in your environments or one repo; no search"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        status: "none"
+        note: "superset skills list shows installed skills only"
+        source: "https://docs.paradev.com/cli/cli-reference"
+      skills:
+        cmd: "npx skills find typescript"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        status: "none"
+        source: "https://coder.com/docs/reference/cli"
+  - id: update
+    task: Update installed skills
+    keywords: upgrade refresh
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      warp:
+        status: "none"
+        source: "https://docs.warp.dev/agents/cli/oz-cli/"
+      superset:
+        status: "none"
+        note: "Skills refresh when the app launches"
+        source: "https://docs.paradev.com/cli/cli-reference"
+      skills:
+        cmd: "npx skills update"
+        source: "https://github.com/vercel-labs/skills/blob/main/docs/commands.md"
+      coder:
+        status: "none"
+        note: "coder update updates workspaces, not skills"
+        source: "https://coder.com/docs/reference/cli"

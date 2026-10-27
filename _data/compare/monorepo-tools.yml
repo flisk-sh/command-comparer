@@ -1,0 +1,132 @@
+# Commands for the monorepo-tools tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: create
+    task: Create a project
+    keywords: init new workspace
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      nx:
+        cmd: "npx create-nx-workspace my-app"
+        source: "https://nx.dev/docs/reference/create-nx-workspace"
+      turborepo:
+        cmd: "npx create-turbo@latest"
+        source: "https://turborepo.dev/docs/reference/create-turbo"
+  - id: generate
+    task: Generate code
+    keywords: scaffold new package app
+    cells:
+      flisk:
+        cmd: flisk resource api --type backend
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      nx:
+        cmd: "nx g @nx/react:lib packages/mylib"
+        note: "Generators come from plugins such as @nx/react."
+        source: "https://nx.dev/docs/features/generate-code"
+      turborepo:
+        cmd: "turbo gen workspace"
+        source: "https://turborepo.dev/docs/reference/generate"
+  - id: dev
+    task: Run every dev server
+    keywords: serve dev watch
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      nx:
+        cmd: "nx run-many -t dev"
+        note: "Runs the dev target of each project."
+        source: "https://nx.dev/docs/kb/from-turborepo"
+      turborepo:
+        cmd: "turbo dev"
+        source: "https://turborepo.dev/docs/crafting-your-repository/developing-applications"
+  - id: build
+    task: Build or test everything
+    keywords: run-many run build test
+    cells:
+      flisk:
+        status: "none"
+        note: "Flisk runs services, not build tasks"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/monorepo-tools.md"
+      nx:
+        cmd: "nx run-many -t build test"
+        source: "https://nx.dev/docs/features/run-tasks"
+      turborepo:
+        cmd: "turbo run build test"
+        source: "https://turborepo.dev/docs/crafting-your-repository/running-tasks"
+  - id: affected
+    task: Only what changed
+    keywords: affected filter diff
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/monorepo-tools.md"
+      nx:
+        cmd: "nx affected -t build"
+        source: "https://nx.dev/docs/reference/nx-commands"
+      turborepo:
+        cmd: "turbo run build --affected"
+        source: "https://turborepo.dev/docs/reference/run"
+  - id: cache
+    task: Clear the cache
+    keywords: reset clean
+    cells:
+      flisk:
+        status: "none"
+        note: Flisk caches nothing
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/monorepo-tools.md"
+      nx:
+        cmd: "nx reset"
+        note: "Also stops the Nx daemon and clears workspace data."
+        source: "https://nx.dev/docs/reference/nx-commands"
+      turborepo:
+        status: "none"
+        note: "No clean command. The cache is .turbo/cache."
+        source: "https://turborepo.dev/docs/reference"
+  - id: graph
+    task: Show the dependency graph
+    keywords: deps visualize
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/monorepo-tools.md"
+      nx:
+        cmd: "nx graph"
+        source: "https://nx.dev/docs/reference/nx-commands"
+      turborepo:
+        cmd: "turbo devtools"
+        source: "https://turborepo.dev/docs/reference/devtools"
+  - id: list
+    task: List projects
+    keywords: ls packages
+    cells:
+      flisk:
+        cmd: flisk resources
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resources.ts"
+      nx:
+        cmd: "nx show projects"
+        source: "https://nx.dev/docs/reference/nx-commands"
+      turborepo:
+        cmd: "turbo ls"
+        source: "https://turborepo.dev/docs/reference/ls"
+  - id: check
+    task: Check the setup
+    keywords: doctor report info
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      nx:
+        cmd: "nx report"
+        status: "partial"
+        note: "Prints version numbers for issue reports. It runs no checks."
+        source: "https://nx.dev/docs/reference/nx-commands"
+      turborepo:
+        cmd: "turbo info"
+        status: "partial"
+        note: "Prints debug information. It runs no checks."
+        source: "https://turborepo.dev/docs/reference/info"

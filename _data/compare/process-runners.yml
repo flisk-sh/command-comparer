@@ -1,0 +1,183 @@
+# Commands for the process-runners tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: start
+    task: Start all processes
+    keywords: up run launch procfile
+    cells:
+      flisk:
+        cmd: flisk up
+        note: Needs a command in each service.json
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/run-without-docker.md"
+      process-compose:
+        cmd: process-compose up
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_up/"
+      overmind:
+        cmd: overmind start
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 start ecosystem.config.js
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: preview
+    task: Preview the start order
+    keywords: dry run plan
+    cells:
+      flisk:
+        cmd: flisk up --dry-run
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/run-without-docker.md"
+      process-compose:
+        cmd:
+          - process-compose graph
+          - process-compose up --dry-run
+        status: partial
+        note: graph prints dependencies; --dry-run only validates the config.
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose/"
+      overmind:
+        status: none
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        status: none
+        source: "https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/"
+  - id: background
+    task: Run in the background
+    keywords: detach daemon
+    cells:
+      flisk:
+        status: "none"
+        note: flisk up stays in the foreground
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/run-without-docker.md"
+      process-compose:
+        cmd: process-compose up -D
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_up/"
+      overmind:
+        cmd: overmind start -D
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        status: na
+        note: pm2 start daemonizes apps by default.
+        source: "https://pm2.keymetrics.io/docs/usage/quick-start/"
+  - id: list
+    task: List processes and state
+    keywords: ps status
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      process-compose:
+        cmd: process-compose process list
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_process_list/"
+      overmind:
+        status: none
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 list
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: logs
+    task: Read logs
+    keywords: output tail follow
+    cells:
+      flisk:
+        cmd: flisk logs -s api
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/run-without-docker.md"
+      process-compose:
+        cmd: process-compose process logs api -f
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_process_logs/"
+      overmind:
+        cmd: overmind echo
+        status: partial
+        note: Only for a daemonized Overmind. README shows no per-process filter.
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 logs api
+        source: "https://pm2.keymetrics.io/docs/usage/log-management/"
+  - id: restart
+    task: Restart one process
+    keywords: reload bounce
+    cells:
+      flisk:
+        cmd: flisk restart api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/restart.ts"
+      process-compose:
+        cmd: process-compose process restart api
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_process_restart/"
+      overmind:
+        cmd: overmind restart api
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 restart api
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: stop-one
+    task: Stop one process
+    keywords: kill
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      process-compose:
+        cmd: process-compose process stop api
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_process_stop/"
+      overmind:
+        cmd: overmind stop api
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 stop api
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: stop
+    task: Stop all
+    keywords: down quit kill
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/run-without-docker.md"
+      process-compose:
+        cmd: process-compose down
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose_down/"
+      overmind:
+        cmd: overmind quit
+        note: Quits a daemonized Overmind.
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 stop all
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: tui
+    task: Terminal UI
+    keywords: tui dashboard monitor panes
+    cells:
+      flisk:
+        cmd: flisk ui
+        status: partial
+        note: Not yet for local processes
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/ui.tsx"
+      process-compose:
+        cmd:
+          - process-compose up
+          - process-compose attach
+        note: TUI is on by default; -t=false turns it off.
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose/"
+      overmind:
+        cmd: overmind connect api
+        status: partial
+        note: Opens one process's tmux window, not a dashboard.
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd: pm2 monit
+        source: "https://pm2.keymetrics.io/docs/usage/process-management/"
+  - id: boot
+    task: Start at boot
+    keywords: startup systemd autostart
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      process-compose:
+        status: none
+        source: "https://f1bonacc1.github.io/process-compose/cli/process-compose/"
+      overmind:
+        status: none
+        source: "https://github.com/DarthSim/overmind#readme"
+      pm2:
+        cmd:
+          - pm2 startup
+          - pm2 save
+        note: pm2 startup prints a sudo command to run.
+        source: "https://pm2.keymetrics.io/docs/usage/startup/"

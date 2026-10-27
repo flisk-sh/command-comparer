@@ -1,0 +1,139 @@
+# Commands for the cluster-bridges tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: connect
+    task: Connect to the cluster network
+    keywords: vpn join session
+    cells:
+      flisk:
+        status: "none"
+        note: Flisk needs no cluster
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cluster-bridges.md"
+      telepresence:
+        cmd: "telepresence connect"
+        source: "https://telepresence.io/docs/reference/cli/telepresence_connect"
+      mirrord:
+        cmd: "mirrord exec microsocks"
+        status: partial
+        note: "Needs microsocks. Runs a SOCKS proxy in the cluster's network."
+        source: "https://metalbear.com/mirrord/docs/using-mirrord/connecting-tools"
+  - id: intercept
+    task: "Take over a service's traffic"
+    keywords: steal intercept route
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cluster-bridges.md"
+      telepresence:
+        cmd: "telepresence intercept api --port 8080:http"
+        source: "https://telepresence.io/docs/howtos/attach"
+      mirrord:
+        cmd: "mirrord exec --steal --target pod/api python main.py"
+        note: "Or set incoming to steal in the config file."
+        source: "https://metalbear.com/mirrord/docs/reference/traffic"
+  - id: mirror
+    task: "Copy traffic, keep the service"
+    keywords: mirror duplicate
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cluster-bridges.md"
+      telepresence:
+        cmd: "telepresence wiretap api --port 8080:http"
+        source: "https://telepresence.io/docs/howtos/attach"
+      mirrord:
+        cmd: "mirrord exec --target pod/api python main.py"
+        note: "Mirroring is the default mode."
+        source: "https://metalbear.com/mirrord/docs/reference/traffic"
+  - id: run
+    task: "Run a local process in the cluster's context"
+    keywords: exec wrap env
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/cluster-bridges.md"
+      telepresence:
+        cmd: "telepresence ingest api -- python main.py"
+        note: "Brings env vars and mounts; no traffic is routed."
+        source: "https://telepresence.io/docs/reference/cli/telepresence_ingest"
+      mirrord:
+        cmd: "mirrord exec --target deployment/api python main.py"
+        source: "https://metalbear.com/mirrord/docs/getting-started/installing-mirrord/cli"
+  - id: list
+    task: List services
+    keywords: targets ls pods
+    cells:
+      flisk:
+        cmd: flisk resources
+        note: Local services only
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resources.ts"
+      telepresence:
+        cmd: "telepresence list"
+        note: "Shows workloads you can attach to."
+        source: "https://telepresence.io/docs/concepts/attachments"
+      mirrord:
+        cmd: "mirrord ls"
+        note: "Lists pods, deployments and other targets."
+        source: "https://metalbear.com/mirrord/docs/getting-started/installing-mirrord/cli"
+  - id: status
+    task: Check status
+    keywords: state connected
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      telepresence:
+        cmd: "telepresence status"
+        source: "https://telepresence.io/docs/reference/cli/telepresence_status"
+      mirrord:
+        cmd: "mirrord operator status"
+        status: partial
+        note: "Reports cluster and Operator status; the Operator is a Teams feature."
+        source: "https://metalbear.com/mirrord/docs/getting-started/installing-mirrord/cli"
+  - id: stop
+    task: Disconnect
+    keywords: leave quit stop down
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      telepresence:
+        cmd: "telepresence quit"
+        source: "https://telepresence.io/docs/reference/cli/telepresence_quit"
+      mirrord:
+        status: na
+        note: "The session ends when the local process exits."
+        source: "https://metalbear.com/mirrord/docs/faq/general"
+  - id: verify
+    task: Verify the config
+    keywords: validate lint
+    cells:
+      flisk:
+        cmd: flisk config verify
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts"
+      telepresence:
+        cmd: "telepresence config view"
+        status: partial
+        note: "Shows the current config; it does not validate it."
+        source: "https://telepresence.io/docs/reference/cli/telepresence_config"
+      mirrord:
+        status: none
+        note: "A hidden verify-config exists; the docs do not list it."
+        source: "https://metalbear.com/mirrord/docs/getting-started/installing-mirrord/cli"
+  - id: diagnose
+    task: Diagnose
+    keywords: doctor logs gather
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      telepresence:
+        cmd: "telepresence gather-logs"
+        status: partial
+        note: "Collects logs into a zip file; it runs no checks."
+        source: "https://telepresence.io/docs/reference/cli/telepresence_gather-logs"
+      mirrord:
+        cmd: "mirrord diagnose latency"
+        status: partial
+        note: "Only measures latency to the target."
+        source: "https://metalbear.com/mirrord/docs/faq/troubleshooting/utilities"

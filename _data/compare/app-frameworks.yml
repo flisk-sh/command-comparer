@@ -1,0 +1,136 @@
+# Commands for the app-frameworks tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: create
+    task: Create an app
+    keywords: init new template
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      aspire:
+        cmd: "aspire new aspire-starter"
+        source: "https://aspire.dev/reference/cli/commands/aspire-new/"
+      encore:
+        cmd: "encore app create my-app"
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: add
+    task: Add a service
+    keywords: scaffold resource
+    cells:
+      flisk:
+        cmd: flisk resource api --type backend
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      aspire:
+        cmd: "aspire add redis"
+        status: "partial"
+        note: "Adds an integration package, not a service of your own."
+        source: "https://aspire.dev/reference/cli/commands/aspire-add/"
+      encore:
+        status: "none"
+        note: "A service is a directory with an encore.service.ts file."
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: run
+    task: Run locally
+    keywords: up dev start
+    cells:
+      flisk:
+        cmd: flisk up
+        note: No framework to adopt
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      aspire:
+        cmd: "aspire run"
+        source: "https://aspire.dev/reference/cli/commands/aspire-run/"
+      encore:
+        cmd: "encore run"
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: test
+    task: Run tests
+    keywords: test
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/app-frameworks.md"
+      aspire:
+        cmd: "dotnet test"
+        note: "A dotnet command. The aspire CLI has no test command."
+        status: partial
+        source: "https://aspire.dev/testing/testing-in-ci/"
+      encore:
+        cmd: "encore test"
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: logs
+    task: Read logs
+    keywords: output tail
+    cells:
+      flisk:
+        cmd: flisk logs -s api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      aspire:
+        cmd: "aspire logs api"
+        source: "https://aspire.dev/reference/cli/commands/aspire-logs/"
+      encore:
+        cmd: "encore logs"
+        status: "partial"
+        note: "Streams an environment's logs, such as prod. encore run prints local logs."
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: status
+    task: Check status
+    keywords: ps state
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      aspire:
+        cmd: "aspire describe"
+        source: "https://aspire.dev/reference/cli/commands/aspire-describe/"
+      encore:
+        status: "none"
+        note: "The local development dashboard shows the running app."
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: client
+    task: Generate an API client
+    keywords: codegen sdk
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/app-frameworks.md"
+      aspire:
+        status: "none"
+        source: "https://aspire.dev/reference/cli/overview/"
+      encore:
+        cmd: "encore gen client --lang=typescript"
+        source: "https://encore.dev/docs/cli/cli-reference"
+  - id: deploy
+    task: Deploy to the cloud
+    keywords: publish release
+    cells:
+      flisk:
+        status: "none"
+        note: Local only. Flisk never deploys
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/app-frameworks.md"
+      aspire:
+        cmd: "aspire deploy"
+        note: "Listed as a preview command in the CLI reference."
+        source: "https://aspire.dev/reference/cli/commands/aspire-deploy/"
+      encore:
+        cmd: "git push encore"
+        note: "Pushes to the Encore git remote. A CLI form exists: encore alpha deploy."
+        source: "https://encore.dev/docs/platform/deploy/deploying"
+  - id: check
+    task: Check the machine
+    keywords: doctor diagnose
+    cells:
+      flisk:
+        cmd: flisk doctor
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/doctor.ts"
+      aspire:
+        cmd: "aspire doctor"
+        source: "https://aspire.dev/reference/cli/commands/aspire-doctor/"
+      encore:
+        cmd: "encore check"
+        status: "partial"
+        note: "Checks that the app compiles and starts. It does not inspect the machine."
+        source: "https://encore.dev/docs/cli/cli-reference"

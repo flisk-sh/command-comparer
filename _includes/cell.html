@@ -1,8 +1,12 @@
 {%- assign cell = include.cell -%}
+{%- if cell == "TODO" -%}
+<div class="cell cell-todo"><p class="cell-empty">TODO</p></div>
+{%- else -%}
 {%- assign status = cell.status | default: "match" -%}
 <div class="cell cell-{{ status }}">
+  {%- if status == "partial" -%}<span class="sr-only">Different job, closest command. </span>{%- endif -%}
   {%- if status == "none" -%}
-  <p class="cell-empty">No equivalent</p>
+  <p class="cell-empty">None</p>
   {%- elsif status == "na" -%}
   <p class="cell-empty">Not needed</p>
   {%- elsif cell.cmd -%}
@@ -11,9 +15,6 @@
     {%- else -%}
       {% include cmd.html cmd=cell.cmd %}
     {%- endif -%}
-  {%- endif -%}
-  {%- if status == "partial" -%}
-  <p class="cell-flag">Different job</p>
   {%- endif -%}
   {%- if cell.note -%}
   <p class="cell-note" id="note-{{ include.cid }}-{{ include.tid }}">{{ cell.note | escape }}</p>
@@ -25,3 +26,4 @@
     {%- endif -%}
   </div>
 </div>
+{%- endif -%}

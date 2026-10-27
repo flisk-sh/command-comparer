@@ -1,0 +1,65 @@
+# The tabs, in display order. Each has a data file at _data/compare/<id>.yml.
+#   name   Tab label.
+#   title  Page heading.
+#   blurb  One short line of scope, shown next to the heading. Keep it honest and under 15 words.
+#   tools  Columns, in order. Flisk is always first.
+- id: overview
+  name: Overview
+  title: Flisk next to the usual tools
+  blurb: Terraform and CDK provision infrastructure. Flisk only runs your app locally.
+  tools: [flisk, terraform, cdk, compose, tilt, skaffold, garden, pm2]
+- id: compose-tilt
+  name: Compose & Tilt
+  title: Flisk vs Docker Compose and Tilt
+  blurb: Flisk generates a Compose file and a Tiltfile and runs them for you.
+  tools: [flisk, compose, tilt]
+- id: process-runners
+  name: Process runners
+  title: Flisk vs process-compose, Overmind and PM2
+  blurb: With a command in every service.json, Flisk runs plain processes without Docker.
+  tools: [flisk, process-compose, overmind, pm2]
+- id: kubernetes-dev
+  name: Kubernetes dev
+  title: Flisk vs Skaffold, DevSpace and Garden
+  blurb: These work against a cluster and deploy. Flisk is local only and never deploys.
+  tools: [flisk, skaffold, devspace, garden]
+- id: local-kubernetes
+  name: Local Kubernetes
+  title: Flisk vs kind and minikube
+  blurb: kind and minikube run real Kubernetes on your laptop. Flisk does not.
+  tools: [flisk, kind, minikube]
+- id: cluster-bridges
+  name: Cluster bridges
+  title: Flisk vs Telepresence and mirrord
+  blurb: These connect your laptop to a remote cluster. Flisk needs no cluster.
+  tools: [flisk, telepresence, mirrord]
+- id: dev-environments
+  name: Dev environments
+  title: Flisk vs Dev Containers and Devbox
+  blurb: These install your toolchain. Flisk runs your services and only checks the tools.
+  tools: [flisk, devcontainers, devbox]
+- id: cloud-workspaces
+  name: Cloud workspaces
+  title: Flisk vs GitHub Codespaces and Coder
+  blurb: These give you a remote machine. You can run flisk up inside one.
+  tools: [flisk, codespaces, coder]
+- id: monorepo-tools
+  name: Monorepo tools
+  title: Flisk vs Nx and Turborepo
+  blurb: Nx and Turborepo run and cache builds. Flisk caches nothing.
+  tools: [flisk, nx, turborepo]
+- id: app-frameworks
+  name: App frameworks
+  title: Flisk vs .NET Aspire and Encore
+  blurb: Aspire and Encore are frameworks you adopt. Flisk needs no code changes.
+  tools: [flisk, aspire, encore]
+- id: ai-agents
+  name: AI agents
+  title: Flisk vs LangGraph and Mastra
+  blurb: LangGraph and Mastra build the agent. Flisk runs it next to its tools and database.
+  tools: [flisk, langgraph, mastra]
+- id: agent-tools
+  name: Agent tools
+  title: Flisk vs Warp, Superset, skills.sh and Coder
+  blurb: These help coding agents work. Flisk runs the stack the agent works on.
+  tools: [flisk, warp, superset, skills, coder]

@@ -1,10 +1,10 @@
 # Site settings. Jekyll does not reload this file during `jekyll serve`,
 # so restart the server after editing it.
 title: Command Comparer
-tagline: Flisk next to Terraform, Docker Compose, Tilt and Skaffold
+tagline: Flisk next to the tools people use for the same jobs
 description: >-
-  A searchable table of the commands Flisk, Terraform, Docker Compose, Tilt and Skaffold
-  give you for the same everyday tasks, with a source for every cell.
+  Side-by-side commands for Flisk, Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden,
+  PM2 and more, across 12 tabs, with a source link for every cell.
 lang: en
 
 # Project page of the flisk-sh org: https://flisk-sh.github.io/command-comparer/
@@ -15,6 +15,20 @@ repo_url: "https://github.com/flisk-sh/command-comparer"
 flisk_url: "https://flisk.sh"
 
 markdown: kramdown
+
+# One stub per tab in _tabs/ (front matter `tab: <id>`). The page is built from
+# _data/tabs.yml, _data/tools.yml and _data/compare/<id>.yml. The home page is the first tab.
+collections:
+  tabs:
+    output: true
+    permalink: /:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: "tabs"
+    values:
+      layout: tab
 
 exclude:
   - Gemfile

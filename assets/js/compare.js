@@ -34,6 +34,13 @@
     paintThemeButton();
   }
 
+  // --- Tabs: keep the current tab visible when the bar scrolls sideways -----
+  var tabBar = document.querySelector(".tabs");
+  var tabNow = tabBar && tabBar.querySelector('[aria-current="page"]');
+  if (tabNow) {
+    tabBar.scrollLeft = Math.max(0, tabNow.offsetLeft - (tabBar.clientWidth - tabNow.offsetWidth) / 2);
+  }
+
   // --- Filters -----------------------------------------------------------
   var table = document.getElementById("comparison");
   if (!table) return;

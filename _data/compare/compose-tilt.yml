@@ -1,0 +1,179 @@
+# Commands for the compose-tilt tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: scaffold
+    task: Scaffold a service
+    keywords: new create add init
+    cells:
+      flisk:
+        cmd: flisk resource api --type backend
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      compose:
+        cmd: docker init
+        status: partial
+        note: Writes Dockerfile and compose.yaml for a project, not one service.
+        source: "https://docs.docker.com/reference/cli/docker/init/"
+      tilt:
+        status: none
+        note: Define resources in the Tiltfile by hand.
+        source: "https://docs.tilt.dev/cli/tilt.html"
+  - id: start
+    task: Start everything
+    keywords: up run launch
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      compose:
+        cmd: docker compose up
+        source: "https://docs.docker.com/reference/cli/docker/compose/up/"
+      tilt:
+        cmd: tilt up
+        source: "https://docs.tilt.dev/cli/tilt_up.html"
+  - id: reload
+    task: Live reload on change
+    keywords: watch hot reload live_update sync
+    cells:
+      flisk:
+        cmd: flisk up
+        note: Generated Tilt live_update
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      compose:
+        cmd: docker compose up --watch
+        note: Needs develop.watch rules in compose.yaml.
+        source: "https://docs.docker.com/compose/how-tos/file-watch/"
+      tilt:
+        cmd: tilt up
+        note: live_update in the Tiltfile syncs files without a rebuild.
+        source: "https://docs.tilt.dev/live_update_reference.html"
+  - id: one
+    task: Start one service or stack
+    keywords: only subset profile partial
+    cells:
+      flisk:
+        cmd: flisk up --only api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      compose:
+        cmd: docker compose up api
+        note: Also starts linked services.
+        source: "https://docs.docker.com/reference/cli/docker/compose/up/"
+      tilt:
+        cmd: tilt up api
+        note: Also starts its resource_deps.
+        source: "https://docs.tilt.dev/resource_dependencies.html"
+  - id: wait
+    task: Wait until healthy
+    keywords: health ready depends_on order
+    cells:
+      flisk:
+        cmd: flisk up
+        note: dependsOn waits for /health
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/compose-tilt.md"
+      compose:
+        cmd: docker compose up --wait
+        note: Implies detached mode.
+        source: "https://docs.docker.com/reference/cli/docker/compose/up/"
+      tilt:
+        cmd: tilt wait --for=condition=Ready "uiresource/api"
+        note: Experimental. Blocks until the resource is Ready.
+        source: "https://docs.tilt.dev/cli/tilt_wait.html"
+  - id: status
+    task: See what is running
+    keywords: ps state list
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      compose:
+        cmd: docker compose ps
+        source: "https://docs.docker.com/reference/cli/docker/compose/ps/"
+      tilt:
+        cmd: tilt get uiresources
+        source: "https://docs.tilt.dev/resource_dependencies.html"
+  - id: logs
+    task: "Read one service's logs"
+    keywords: output tail follow
+    cells:
+      flisk:
+        cmd: flisk logs -s api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      compose:
+        cmd: docker compose logs -f api
+        source: "https://docs.docker.com/reference/cli/docker/compose/logs/"
+      tilt:
+        cmd: tilt logs -f api
+        source: "https://docs.tilt.dev/cli/tilt_logs.html"
+  - id: restart
+    task: Restart one service
+    keywords: reload rebuild trigger
+    cells:
+      flisk:
+        cmd: flisk restart api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/restart.ts"
+      compose:
+        cmd: docker compose restart api
+        note: Does not apply compose file changes.
+        source: "https://docs.docker.com/reference/cli/docker/compose/restart/"
+      tilt:
+        cmd: tilt trigger api
+        note: Triggers an update; may rebuild the resource.
+        source: "https://docs.tilt.dev/cli/tilt_trigger.html"
+  - id: exec
+    task: Run a command in a service
+    keywords: shell exec sh bash enter
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      compose:
+        cmd: docker compose exec api sh
+        source: "https://docs.docker.com/reference/cli/docker/compose/exec/"
+      tilt:
+        cmd: tilt alpha shell api
+        status: partial
+        note: Alpha. Opens a shell only, in a Kubernetes pod.
+        source: "https://docs.tilt.dev/cli/tilt_alpha_shell.html"
+  - id: urls
+    task: Show service URLs
+    keywords: ports address links port
+    cells:
+      flisk:
+        cmd: flisk networks
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/networks.ts"
+      compose:
+        cmd: docker compose port api 80
+        status: partial
+        note: Prints the public port for one mapping, not a URL.
+        source: "https://docs.docker.com/reference/cli/docker/compose/port/"
+      tilt:
+        status: none
+        note: Links are set in the Tiltfile and shown in the UI.
+        source: "https://docs.tilt.dev/cli/tilt.html"
+  - id: check
+    task: Check the config
+    keywords: validate lint verify
+    cells:
+      flisk:
+        cmd: flisk config verify
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts"
+      compose:
+        cmd: docker compose config -q
+        source: "https://docs.docker.com/reference/cli/docker/compose/config/"
+      tilt:
+        cmd: tilt alpha tiltfile-result
+        status: partial
+        note: Alpha. Runs the Tiltfile and prints the result as JSON.
+        source: "https://docs.tilt.dev/cli/tilt_alpha_tiltfile-result.html"
+  - id: stop
+    task: Stop
+    keywords: down teardown remove
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      compose:
+        cmd: docker compose down
+        source: "https://docs.docker.com/reference/cli/docker/compose/down/"
+      tilt:
+        cmd: tilt down
+        source: "https://docs.tilt.dev/cli/tilt_down.html"

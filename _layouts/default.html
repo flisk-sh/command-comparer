@@ -3,13 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- include current-tab.html -%}
   {%- assign page_title = site.title -%}
-  {%- if page.title and page.url != "/" %}{% assign page_title = page.title | append: " | " | append: site.title %}{% endif %}
+  {%- assign page_desc = site.description | strip -%}
+  {%- if cur_tab -%}
+    {%- if page.tab != "overview" -%}{%- assign page_title = cur_tab.title | append: " | " | append: site.title -%}{%- endif -%}
+    {%- assign page_desc = cur_tab.title | append: ". " | append: cur_tab.blurb | append: " Every command has a source link." -%}
+  {%- elsif page.title -%}
+    {%- assign page_title = page.title | append: " | " | append: site.title -%}
+  {%- endif %}
   <title>{{ page_title | escape }}</title>
-  <meta name="description" content="{{ site.description | strip | escape }}">
+  <meta name="description" content="{{ page_desc | escape }}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{ page_title | escape }}">
-  <meta property="og:description" content="{{ site.description | strip | escape }}">
+  <meta property="og:description" content="{{ page_desc | escape }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta name="twitter:card" content="summary">
   <meta name="color-scheme" content="light dark">
@@ -37,13 +44,11 @@
   <header class="site-header">
     <div class="wrap bar">
       <a class="brand" href="{{ '/' | relative_url }}">
-        <img src="{{ '/assets/favicon.svg' | relative_url }}" alt="" width="24" height="24">
+        <img src="{{ '/assets/favicon.svg' | relative_url }}" alt="" width="20" height="20">
         <span>{{ site.title }}</span>
       </a>
       <nav class="nav" aria-label="Primary">
-        <a class="nav-extra" href="{{ '/' | relative_url }}#compare">Compare</a>
-        <a class="nav-extra" href="{{ '/' | relative_url }}#tools">Tools</a>
-        <a class="nav-extra" href="{{ '/' | relative_url }}#about">About</a>
+        <a class="nav-extra" href="{{ '/about/' | relative_url }}">About</a>
         <a href="{{ site.repo_url }}" rel="noopener">GitHub</a>
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch theme">Theme</button>
       </nav>
@@ -56,8 +61,7 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Made by the <a href="{{ site.flisk_url }}" rel="noopener">Flisk</a> team, so read the sources. Every cell links to the docs behind it. Wrong or out of date? <a href="{{ site.repo_url }}/issues" rel="noopener">Open an issue</a> or send a pull request.</p>
-      <p>Names and trademarks belong to their owners. Source and data are MIT licensed.</p>
+      <p>Made by the <a href="{{ site.flisk_url }}" rel="noopener">Flisk</a> team, so read the sources. Flisk is local-only: it does not deploy or write Kubernetes manifests. Wrong cell? <a href="{{ site.repo_url }}/issues" rel="noopener">Open an issue</a>. <a href="{{ '/about/' | relative_url }}">About this site</a>.</p>
     </div>
   </footer>
 

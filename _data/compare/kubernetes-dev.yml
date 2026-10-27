@@ -1,0 +1,206 @@
+# Commands for the kubernetes-dev tab. Tool columns come from tabs.yml.
+# Cell: cmd (string or list), status (match, partial, none, na), note (optional, short), source (https URL).
+tasks:
+  - id: init
+    task: Set up a project
+    keywords: init new create
+    cells:
+      flisk:
+        cmd:
+          - flisk project
+          - flisk init
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts"
+      skaffold:
+        cmd: skaffold init
+        note: Looks for Dockerfiles and Kubernetes manifests and writes skaffold.yaml.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace init
+        note: Writes devspace.yaml in the current folder.
+        source: "https://www.devspace.sh/docs/cli/devspace_init"
+      garden:
+        cmd: garden create project
+        source: "https://docs.garden.io/reference/commands#garden-create-project"
+  - id: add
+    task: Add a service
+    keywords: scaffold new module
+    cells:
+      flisk:
+        cmd: flisk resource api --type backend
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts"
+      skaffold:
+        status: none
+        note: No command. You add an artifact and its manifests to skaffold.yaml.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        status: none
+        note: No command. You add images and deployments to devspace.yaml.
+        source: "https://www.devspace.sh/docs/cli"
+      garden:
+        status: none
+        note: No command. You add an action config to a garden.yml file.
+        source: "https://docs.garden.io/reference/commands"
+  - id: dev
+    task: "Dev loop: build, run, sync"
+    keywords: dev watch live reload sync
+    cells:
+      flisk:
+        cmd: flisk up
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/up.ts"
+      skaffold:
+        cmd: skaffold dev
+        note: Builds, deploys and redeploys when files change.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace dev
+        source: "https://www.devspace.sh/docs/cli/devspace_dev"
+      garden:
+        cmd: garden deploy --sync
+        note: Deploys with code sync on, for each Deploy that has sync configured.
+        source: "https://docs.garden.io/reference/commands#garden-deploy"
+  - id: deploy
+    task: Deploy once
+    keywords: release apply run
+    cells:
+      flisk:
+        status: "none"
+        note: Local only. Flisk never deploys
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/kubernetes-dev.md"
+      skaffold:
+        cmd: skaffold run
+        note: Builds and deploys once. skaffold deploy ships pre-built images.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace deploy
+        source: "https://www.devspace.sh/docs/cli/devspace_deploy"
+      garden:
+        cmd: garden deploy
+        note: Builds and deploys in dependency order.
+        source: "https://docs.garden.io/reference/commands#garden-deploy"
+  - id: build
+    task: Build images
+    keywords: docker image
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/compare/kubernetes-dev.md"
+      skaffold:
+        cmd: skaffold build
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace build
+        source: "https://www.devspace.sh/docs/cli/devspace_build"
+      garden:
+        cmd: garden build
+        source: "https://docs.garden.io/reference/commands#garden-build"
+  - id: logs
+    task: Read logs
+    keywords: output tail
+    cells:
+      flisk:
+        cmd: flisk logs -s api
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/logs.ts"
+      skaffold:
+        cmd: skaffold run --tail
+        status: partial
+        note: No logs command. skaffold dev streams logs by default, and run does with --tail.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace logs
+        source: "https://www.devspace.sh/docs/cli/devspace_logs"
+      garden:
+        cmd: garden logs api
+        source: "https://docs.garden.io/reference/commands#garden-logs"
+  - id: status
+    task: See what is running
+    keywords: state ps
+    cells:
+      flisk:
+        cmd: flisk status
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/status.ts"
+      skaffold:
+        status: none
+        note: No status command. Use kubectl to see what is running in the cluster.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace list deployments
+        source: "https://www.devspace.sh/docs/cli/devspace_list_deployments"
+      garden:
+        cmd: garden get status
+        source: "https://docs.garden.io/reference/commands#garden-get-status"
+  - id: shell
+    task: Open a shell in a service
+    keywords: exec enter ssh
+    cells:
+      flisk:
+        status: "none"
+        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+      skaffold:
+        status: none
+        note: No shell command. skaffold exec runs a custom action, not a shell.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace enter
+        source: "https://www.devspace.sh/docs/cli/devspace_enter"
+      garden:
+        cmd: garden exec api -- /bin/sh
+        source: "https://docs.garden.io/reference/commands#garden-exec"
+  - id: render
+    task: Render Kubernetes manifests
+    keywords: yaml helm kustomize
+    cells:
+      flisk:
+        status: "none"
+        note: Flisk writes no Kubernetes manifests
+        source: "https://github.com/flisk-sh/flisk/blob/main/AGENTS.md"
+      skaffold:
+        cmd: skaffold render
+        note: Builds and tags images, then prints the rendered manifests.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace render
+        note: Builds the images first. --skip-build skips that.
+        source: "https://www.devspace.sh/docs/cli/devspace_render"
+      garden:
+        status: none
+        note: No render command. garden plan (experimental) shows a diff of changes.
+        source: "https://docs.garden.io/reference/commands"
+  - id: check
+    task: Validate the config
+    keywords: lint verify diagnose
+    cells:
+      flisk:
+        cmd: flisk config verify
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/config.ts"
+      skaffold:
+        cmd: skaffold diagnose --yaml-only
+        note: Prints the effective skaffold.yaml.
+        status: partial
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace print
+        status: partial
+        note: Prints the final config after patches and variables. Not a validator.
+        source: "https://www.devspace.sh/docs/cli/devspace_print"
+      garden:
+        cmd: garden validate
+        source: "https://docs.garden.io/reference/commands#garden-validate"
+  - id: down
+    task: Tear down
+    keywords: delete purge stop remove
+    cells:
+      flisk:
+        cmd: flisk down
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/down.ts"
+      skaffold:
+        cmd: skaffold delete
+        note: Deletes what Skaffold deployed. skaffold dev also cleans up on exit.
+        source: "https://skaffold.dev/docs/references/cli/"
+      devspace:
+        cmd: devspace purge
+        note: Deletes the deployed Kubernetes resources.
+        source: "https://www.devspace.sh/docs/cli/devspace_purge"
+      garden:
+        cmd: garden cleanup deploy
+        note: Un-deploys every Deploy. cleanup namespace clears the whole namespace.
+        source: "https://docs.garden.io/reference/commands#garden-cleanup-deploy"
