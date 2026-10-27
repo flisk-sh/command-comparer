@@ -1,3 +1,0 @@
----
-tab: monorepo-tools
----

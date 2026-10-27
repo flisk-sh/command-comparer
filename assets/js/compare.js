@@ -6,6 +6,8 @@
 
   var root = document.documentElement;
   root.classList.add("js");
+  // The tool that is always shown first (set in _data/meta.yml).
+  var primary = document.body.getAttribute("data-primary") || "";
 
   // --- Theme -------------------------------------------------------------
   var themeBtn = document.getElementById("theme-toggle");
@@ -177,7 +179,7 @@
       state.q = (p.get("q") || "").trim();
       state.notes = p.get("notes") === "1";
       (p.get("hide") || "").split(",").forEach(function (id) {
-        if (id && id !== "flisk") state.off[id] = true;
+        if (id && id !== primary) state.off[id] = true;
       });
     } catch (e) {}
   }
@@ -224,7 +226,7 @@
     if (!toolBox) return;
     Array.prototype.forEach.call(toolBox.querySelectorAll(".chip[data-tool]"), function (chip) {
       var id = chip.getAttribute("data-tool");
-      if (id === "flisk") return;
+      if (id === primary) return;
       var on = !state.off[id];
       var name = chip.getAttribute("data-name") || chip.textContent;
       chip.setAttribute("aria-pressed", String(on));

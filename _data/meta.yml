@@ -1,4 +1,12 @@
-# When the commands were last checked, and against which Flisk version.
+# Site-wide settings for the comparison. Every field is explained in the comparer template's README:
+# https://github.com/flisk-sh/comparer#data-format
+primary: flisk
+primary_cli: flisk
+maintainer: the Flisk team
+maintainer_url: https://flisk.sh
+footer_note: "Flisk is local-only: it does not deploy or write Kubernetes manifests."
+about_note: Terraform and CDK provision infrastructure. Flisk runs a local dev loop and never deploys.
+pick_default: [terraform, compose, tilt]
 checked:
   date: "2026-10-27"
-  flisk: "1.4.10"
+  version: "1.4.10"

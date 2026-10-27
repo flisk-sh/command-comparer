@@ -7,8 +7,9 @@
 #                                              every cell has an https source, no TODO left
 #   ruby scripts/check-data.rb --tab ID        only that tab (repeat the flag for more)
 #   ruby scripts/check-data.rb --todo-ok       allow `TODO` placeholders (work in progress)
-#   ruby scripts/check-data.rb --flisk         also run each Flisk command's subcommand and
-#                                              flags against the installed `flisk --help`
+#   ruby scripts/check-data.rb --cli           also run each command of the primary tool (the first column)
+#                                              against its installed CLI: the subcommands and flags
+#                                              must show up in `<cli> ... --help`
 #   ruby scripts/check-data.rb --links         also fetch every source URL and expect a 2xx
 #
 # Exit code 1 when anything fails.
@@ -23,7 +24,7 @@ STATUSES = %w[match partial none na].freeze
 NOTE_MAX = 110
 BLURB_MAX = 100
 
-check_flisk = ARGV.include?("--flisk")
+check_cli = ARGV.include?("--cli")
 check_links = ARGV.include?("--links")
 todo_ok = ARGV.include?("--todo-ok")
 only = ARGV.each_with_index.select { |a, _| a == "--tab" }.map { |_, i| ARGV[i + 1] }.compact
@@ -34,6 +35,9 @@ warnings = []
 tools = YAML.safe_load(File.read(File.join(DATA_DIR, "tools.yml")))
 tabs = YAML.safe_load(File.read(File.join(DATA_DIR, "tabs.yml")))
 meta = YAML.safe_load(File.read(File.join(DATA_DIR, "meta.yml")))
+
+primary = meta["primary"].to_s
+errors << "meta.yml: primary must name a tool in tools.yml (found #{primary.inspect})" unless tools.key?(primary)
 
 tools.each do |id, t|
   %w[name tagline site docs].each do |k|
@@ -64,7 +68,7 @@ selected.each do |tab|
   warnings << "tab #{tid}: blurb is #{tab['blurb'].to_s.size} chars, keep it under #{BLURB_MAX}" if tab["blurb"].to_s.size > BLURB_MAX
 
   tab_tools = tab["tools"] || []
-  errors << "tab #{tid}: Flisk must be the first tool" unless tab_tools.first == "flisk"
+  errors << "tab #{tid}: the primary tool (#{primary}) must be the first tool" unless tab_tools.first == primary
   errors << "tab #{tid}: duplicate tools" unless tab_tools.uniq.size == tab_tools.size
   (tab_tools - tools.keys).each { |t| errors << "tab #{tid}: tool #{t} is not in tools.yml" }
 
@@ -131,73 +135,92 @@ selected.each do |tab|
   end
 end
 
-# --- Flisk commands against the installed CLI ---------------------------------
-if check_flisk
-  def run_flisk(*args)
-    out, status = Open3.capture2e("flisk", *args)
+# --- The primary tool's commands against its installed CLI -----------------------
+if check_cli
+  bin = (meta["primary_cli"] || primary).to_s
+
+  def run_cli(bin, *args)
+    out, status = Open3.capture2e(bin, *args)
     [out.force_encoding(Encoding::UTF_8).scrub, status]
   rescue Errno::ENOENT
     [nil, nil]
   end
 
-  version_out, = run_flisk("--version")
+  version_out, = run_cli(bin, "--version")
   if version_out.nil?
-    errors << "--flisk: the flisk CLI is not on PATH"
+    errors << "--cli: `#{bin}` is not on PATH"
   else
     installed = version_out.strip.split("\n").last.to_s.strip
-    expected = meta.dig("checked", "flisk").to_s
-    warnings << "installed flisk is #{installed}, data was checked against #{expected}" unless installed == expected
+    expected = meta.dig("checked", "version").to_s
+    warnings << "installed #{bin} is #{installed}, data was checked against #{expected}" if !expected.empty? && installed != expected
 
-    top, = run_flisk("--help")
-    nested = { "config" => true, "agent" => true }
+    root_help, = run_cli(bin, "--help")
     help_cache = {}
+
+    # Help text for `bin word word`, or nil when the last word is not a subcommand.
+    # Some CLIs only answer `bin parent help child`, so that form is tried too. An unknown
+    # word makes most CLIs print the root help, which is how it is told apart.
+    sub_help = lambda do |words|
+      help_cache.fetch(words) do
+        out, st = run_cli(bin, *words, "--help")
+        found = !out.nil? && st&.success? && out != root_help && out =~ /usage/i
+        if !found && words.size >= 1
+          out2, st2 = run_cli(bin, *words[0...-1], "help", words.last)
+          if !out2.nil? && st2&.success? && out2 != root_help && out2 =~ /usage/i
+            out = out2
+            found = true
+          end
+        end
+        found = true if !found && out.to_s =~ /could not run|not found in \$PATH/i
+        help_cache[words] = found ? out : nil
+      end
+    end
+
+    root_has_commands = root_help.to_s =~ /commands?:/i
     seen = {}
 
     data_by_tab.each do |tid, data|
       data["tasks"].each do |task|
-        cell = task["cells"]["flisk"]
+        cell = task["cells"][primary]
         next unless cell.is_a?(Hash)
 
         commands_of(cell).each do |cmd|
           next if seen[cmd]
 
           seen[cmd] = true
-          where = "#{tid} / #{task['id']} / flisk: `#{cmd}`"
+          where = "#{tid} / #{task['id']} / #{primary}: `#{cmd}`"
           tokens = cmd.split
           first = tokens.shift
-          # skills are installed with npx, not flisk; only flisk commands are checked here
-          next if first == "npx"
+          # Commands run through a package runner (npx, bunx) belong to another program.
+          next if %w[npx bunx pnpx].include?(first)
 
-          unless first == "flisk"
-            errors << "#{where}: must start with flisk"
+          unless first == bin
+            errors << "#{where}: must start with #{bin}"
             next
           end
 
-          sub = tokens.first
-          if sub.nil? || sub.start_with?("-")
-            errors << "#{where}: needs a subcommand"
-            next
+          path = []
+          help = root_help
+          while tokens.first && !tokens.first.start_with?("-")
+            h = sub_help.call(path + [tokens.first])
+            break if h.nil?
+
+            path << tokens.shift
+            help = h
           end
-          # A command or one of its aliases (such as `init` for `project`) prints its own
-          # "Usage: flisk project|init ..." line. An unknown word prints the root help instead.
-          sub_help, = help_cache[[sub, "--help"]] ||= run_flisk(sub, "--help")
-          unless sub_help.lines.first(3).any? { |l| l =~ /Usage: flisk (?:[\w-]+\|)*#{Regexp.escape(sub)}(?:\|[\w-]+)*\b/ } ||
-                 top =~ /^\s+(?:[\w-]+,\s*)*#{Regexp.escape(sub)}(?:,\s*[\w-]+)*\s{2,}/
-            errors << "#{where}: `flisk #{sub}` is not a flisk command"
+
+          if path.empty? && tokens.first && !tokens.first.start_with?("-") && root_has_commands
+            errors << "#{where}: `#{bin} #{tokens.first}` is not a #{bin} command"
             next
           end
 
-          help_args = [sub, "--help"]
-          help_args = [sub, "help", tokens[1]] if nested[sub] && tokens[1] && !tokens[1].start_with?("-")
-          help, = help_cache[help_args] ||= run_flisk(*help_args)
-
-          if help.include?("could not run")
+          if help.to_s =~ /could not run|not found in \$PATH/i
             warnings << "#{where}: help is not available here (#{help.strip.lines.first.strip}); flags not checked"
             next
           end
 
-          tokens.select { |t| t.start_with?("-") }.each do |flag|
-            errors << "#{where}: flag #{flag} not in `flisk #{help_args.join(' ')}`" unless help.include?(flag)
+          tokens.select { |tok| tok.start_with?("-") }.map { |f| f.split("=").first }.each do |flag|
+            errors << "#{where}: flag #{flag} not in `#{bin} #{path.join(' ')} --help`" unless help.to_s.include?(flag)
           end
         end
       end

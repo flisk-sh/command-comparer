@@ -11,7 +11,8 @@ app: true
          data-base="{{ site.baseurl }}">
   <div class="top">
     <h1 id="pick-title">Pick your own comparison</h1>
-    <p>Add any tools. Flisk stays first. The link keeps your picks.</p>
+    {%- assign primary_name = site.data.tools[site.data.meta.primary].name -%}
+    <p>Add any tools. {{ primary_name }} stays first. The link keeps your picks.</p>
   </div>
 
   <noscript><p class="empty">This page needs JavaScript. The tabs above work without it.</p></noscript>
@@ -35,7 +36,7 @@ app: true
 
   <p class="empty" id="pick-error" hidden>The data did not load. Reload the page, or use the tabs above.</p>
   <div id="pick-out"></div>
-  <p class="empty" id="pick-empty" hidden>Add a tool besides Flisk to see it here.</p>
+  <p class="empty" id="pick-empty" hidden>Add a tool to see it here.</p>
 
   <ul class="legend" aria-label="How to read a cell">
     <li><span class="swatch swatch-match"></span>Same job</li>

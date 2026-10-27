@@ -3,6 +3,7 @@ layout: default
 ---
 {%- include current-tab.html -%}
 {%- assign tool_count = cur_tab.tools | size -%}
+{%- assign primary = site.data.meta.primary -%}
 {%- include tabs-nav.html current=page.tab -%}
 
 <section id="compare" class="compare-section" aria-labelledby="compare-title">
@@ -16,7 +17,7 @@ layout: default
     <div class="chips" role="group" aria-label="Tools shown" id="tools-toggle">
       {%- for tid in cur_tab.tools %}
       {%- assign tool = site.data.tools[tid] %}
-      <button type="button" class="chip chip-tool{% if tid == 'flisk' %} chip-flisk{% endif %}" data-tool="{{ tid }}" data-name="{{ tool.name }}" aria-pressed="true"{% if tid == 'flisk' %} disabled aria-label="Flisk is always shown"{% endif %}>{{ tool.name }}</button>
+      <button type="button" class="chip chip-tool{% if tid == primary %} chip-primary{% endif %}" data-tool="{{ tid }}" data-name="{{ tool.name }}" aria-pressed="true"{% if tid == primary %} disabled aria-label="{{ tool.name }} is always shown"{% endif %}>{{ tool.name }}</button>
       {%- endfor %}
     </div>
     <details class="add-menu">
@@ -42,7 +43,7 @@ layout: default
           <th scope="col" class="col-task">Task</th>
           {%- for tid in cur_tab.tools %}
           {%- assign tool = site.data.tools[tid] %}
-          <th scope="col" class="col-tool{% if tid == 'flisk' %} col-flisk{% endif %}" data-tool="{{ tid }}">
+          <th scope="col" class="col-tool{% if tid == primary %} col-primary{% endif %}" data-tool="{{ tid }}">
             <a href="{{ tool.docs }}" target="_blank" rel="noopener">{{ tool.name }}</a>
             <span class="th-tag">{{ tool.tagline }}</span>
           </th>
@@ -58,7 +59,7 @@ layout: default
           {%- for tid in cur_tab.tools %}
           {%- assign tool = site.data.tools[tid] %}
           {%- assign the_cell = task.cells[tid] %}
-          <td class="col-tool{% if tid == 'flisk' %} col-flisk{% endif %}" data-tool="{{ tid }}" data-label="{{ tool.name }}">
+          <td class="col-tool{% if tid == primary %} col-primary{% endif %}" data-tool="{{ tid }}" data-label="{{ tool.name }}">
             {%- include cell.html cell=the_cell tool=tool.name task=task.task cid=task.id tid=tid %}
           </td>
           {%- endfor %}

@@ -1,5 +1,5 @@
 /* Command Comparer. Table first: a slim header, one toolbar row, then the table.
-   Colors follow the Flisk site: one green accent, mono for commands.
+   One green accent, mono for commands. Change the colors in the :root blocks below.
    Light is the default; dark follows the system, and the toggle overrides both. */
 
 :root {
@@ -273,7 +273,7 @@ input[type="search"]:focus-visible {
   color: var(--accent-ink);
 }
 /* A tool chip is a switch: x removes the column, + brings it back. */
-.chip-tool[aria-pressed="true"]:not(.chip-flisk)::after { content: " \00d7"; font-weight: 700; opacity: 0.7; }
+.chip-tool[aria-pressed="true"]:not(.chip-primary)::after { content: " \00d7"; font-weight: 700; opacity: 0.7; }
 .chip-tool[aria-pressed="false"] { color: var(--muted); border-style: dashed; }
 .chip-tool[aria-pressed="false"]::before { content: "+ "; font-weight: 700; }
 .chip:disabled { cursor: default; transform: none; }
@@ -404,23 +404,23 @@ input[type="search"]:focus-visible {
 .th-tag { display: block; margin-top: -1px; font-size: 0.75rem; font-weight: 500; color: var(--faint); }
 
 .compare .col-task { width: 9rem; }
-/* Flisk is the point of the page, so its column gets more room than the others. */
-.compare th.col-flisk { width: 12.5rem; }
+/* The primary tool is the point of the page, so its column gets more room than the others. */
+.compare th.col-primary { width: 12.5rem; }
 .compare .cell-task { font-weight: 700; font-size: 0.875rem; background: var(--surface); }
 
-.compare tbody tr:hover > td:not(.col-flisk), .compare tbody tr:hover > .cell-task { background: var(--surface-2); }
+.compare tbody tr:hover > td:not(.col-primary), .compare tbody tr:hover > .cell-task { background: var(--surface-2); }
 
-/* The Flisk column is the point of the page, so it gets the accent. */
-.compare th.col-flisk { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
-.compare th.col-flisk a { color: var(--accent-ink); }
-.compare th.col-flisk .th-tag { color: var(--accent-ink); opacity: 0.75; }
-.compare td.col-flisk {
+/* The primary column is the point of the page, so it gets the accent. */
+.compare th.col-primary { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.compare th.col-primary a { color: var(--accent-ink); }
+.compare th.col-primary .th-tag { color: var(--accent-ink); opacity: 0.75; }
+.compare td.col-primary {
   background: var(--accent-tint);
   border-left: 2px solid var(--accent-line);
   border-right: 2px solid var(--accent-line);
 }
-.compare th.col-flisk { border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-.compare tbody tr:last-child td.col-flisk { border-bottom: 2px solid var(--accent-line); }
+.compare th.col-primary { border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+.compare tbody tr:last-child td.col-primary { border-bottom: 2px solid var(--accent-line); }
 
 /* A cell is plain text: the command, and nothing else until you point at it.
    Click a command to copy it. Source and note icons appear on hover or keyboard focus. */
@@ -597,7 +597,7 @@ input[type="search"]:focus-visible {
   .compare thead th.col-task { position: sticky; left: 0; top: 0; z-index: 6; }
 }
 
-/* Phones and small tablets: one card per task, Flisk first. */
+/* Phones and small tablets: one card per task, the primary tool first. */
 @media (max-width: 820px) {
   .wrap { padding: 0 0.9rem; }
 
@@ -638,13 +638,13 @@ input[type="search"]:focus-visible {
     letter-spacing: 0.02em;
     color: var(--faint);
   }
-  .compare td.col-flisk {
+  .compare td.col-primary {
     border-left: 3px solid var(--accent);
     border-right: 0;
   }
-  .compare td.col-flisk::before { color: var(--accent-text); font-weight: 700; }
-  .compare tbody tr:last-child td.col-flisk { border-bottom: 0; }
-  .compare tbody tr:hover > td:not(.col-flisk), .compare tbody tr:hover > .cell-task { background: transparent; }
+  .compare td.col-primary::before { color: var(--accent-text); font-weight: 700; }
+  .compare tbody tr:last-child td.col-primary { border-bottom: 0; }
+  .compare tbody tr:hover > td:not(.col-primary), .compare tbody tr:hover > .cell-task { background: transparent; }
   .compare tbody tr:hover > .cell-task { background: var(--surface-2); }
 }
 

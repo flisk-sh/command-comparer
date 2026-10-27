@@ -1,3 +1,0 @@
----
-tab: coding-agents
----

@@ -17,6 +17,8 @@ Flisk runs a multi-service app on your computer. It does not deploy and it does 
 
 The layout follows [CloudComparer](https://github.com/ilyas-it83/CloudComparer): a Jekyll site that renders YAML data into a table, published on GitHub Pages. Here each tab is its own page.
 
+This repo holds only the content: the data, the config and the domain. The site itself, meaning the layouts, scripts, styles, check script and workflows, comes from the [flisk-sh/comparer](https://github.com/flisk-sh/comparer) template, so any comparison can reuse it. See [Update the engine](#update-the-engine).
+
 ## Tabs
 
 The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus an overview and tabs for infrastructure as code, local services, databases, coding agents and agent tools.
@@ -48,21 +50,28 @@ The tabs mirror the comparison pages in the Flisk repo (`docs/compare/`), plus a
 
 ## What is in the repo
 
+Yours, the content of this comparison:
+
 | Path | What it is |
 | --- | --- |
+| `_data/meta.yml` | The primary tool (Flisk), the maintainer, the footer and About text, and the Flisk version the commands were checked against |
 | `_data/tools.yml` | Every tool: name, tagline, site, official command reference |
 | `_data/tabs.yml` | The tabs in order: title, one-line scope, and which tools are columns |
 | `_data/compare/<tab>.yml` | The rows and cells of one tab |
-| `_data/meta.yml` | The date and Flisk version the Flisk commands were checked against |
-| `_tabs/<tab>.md` | One stub per tab (`tab: <id>`). Jekyll builds the page from the data |
-| `pick.html`, `assets/compare.json`, `assets/js/pick.js` | The Pick tools page. The JSON is generated from `_data/` at build time and loaded by the page |
-| `index.html` | The home page, the Overview tab |
-| `_layouts/tab.html`, `_includes/cell.html`, `_includes/cmd.html` | How a tab, a cell and a command render |
-| `assets/css/style.css`, `assets/js/compare.js` | Light and dark themes, phone card layout, search, tool chips, copy buttons |
+| `_config.yml`, `CNAME`, `assets/favicon.svg` | Site title, address and icon |
 | `docs/` | The README screenshots of the live site (not published on the site) |
-| `scripts/check-data.rb` | Checks the data (see below) |
-| `.github/workflows/site.yml` | Checks, builds and deploys to GitHub Pages |
-| `.github/workflows/links.yml` | Weekly check that every source URL still loads |
+
+From the template, never edited here:
+
+| Path | What it is |
+| --- | --- |
+| `_layouts/`, `_includes/`, `_plugins/` | How a tab, a cell and a command render. The plugin builds one page per entry in `tabs.yml`, so a tab needs no page file |
+| `assets/css/style.css`, `assets/js/` | Light and dark themes, phone card layout, search, tool chips, hover icons, copy, the Pick tools page |
+| `assets/compare.json`, `pick.html` | The Pick tools page. The JSON is generated from `_data/` at build time |
+| `about.html`, `404.html` | The About and not-found pages. Their text comes from `meta.yml` |
+| `scripts/check-data.rb`, `scripts/sync-template.sh` | The data check, and the script that updates this list from the template |
+| `.github/` | Checks, builds and deploys to GitHub Pages; a weekly check that every source URL still loads; Dependabot |
+| `.comparer-engine`, `.comparer-version` | Which paths belong to the template, and which template version this repo last synced |
 
 ## Data format
 
@@ -114,11 +123,11 @@ Needs Ruby 2.6 or newer and nothing else.
 ```bash
 ruby scripts/check-data.rb            # structure: a cell per task and tool, an https source on every cell, no TODO
 ruby scripts/check-data.rb --tab kubernetes-dev   # one tab only
-ruby scripts/check-data.rb --flisk    # also run each Flisk command's subcommand and flags against the installed flisk
+ruby scripts/check-data.rb --cli      # also run each Flisk command's subcommand and flags against the installed flisk
 ruby scripts/check-data.rb --links    # also fetch every source URL and expect a 2xx
 ```
 
-The first form runs on every pull request. `--links` runs weekly. `--flisk` needs `flisk` on your `PATH`, so run it yourself after editing a Flisk cell.
+The first form runs on every pull request. `--links` runs weekly. `--cli` needs `flisk` on your `PATH`, so run it yourself after editing a Flisk cell.
 
 ## Build and preview
 
@@ -147,6 +156,18 @@ The site runs on the custom domain `cmd.flisk.sh`:
 - DNS (Cloudflare, zone `flisk.sh`): a `CNAME` record, name `cmd`, target `flisk-sh.github.io`, DNS only.
 - GitHub Pages (Settings, Pages): custom domain `cmd.flisk.sh`, Enforce HTTPS on. The `CNAME` file in the repo records the same name.
 - `_config.yml`: `url: https://cmd.flisk.sh` and an empty `baseurl`. If you serve the site under a path instead, set `baseurl` to that path.
+
+## Update the engine
+
+The look and behavior come from the [comparer](https://github.com/flisk-sh/comparer) template. To pick up its improvements:
+
+```bash
+scripts/sync-template.sh      # copies the template's engine files and records the version
+git diff                      # review
+ruby scripts/check-data.rb
+```
+
+It touches only the paths in `.comparer-engine`. The data, config, README, `CNAME`, favicon and `docs/` stay as they are. To change the engine itself, send the change to the template, because the next sync overwrites local edits to those files.
 
 ## Licence
 

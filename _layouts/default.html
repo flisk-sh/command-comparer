@@ -38,7 +38,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 </head>
-<body{% if page.layout == "tab" or page.app %} class="app"{% endif %}>
+<body data-primary="{{ site.data.meta.primary }}"{% if page.layout == "tab" or page.app %} class="app"{% endif %}>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -61,7 +61,12 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Made by the <a href="{{ site.flisk_url }}" rel="noopener">Flisk</a> team, so read the sources. Flisk is local-only: it does not deploy or write Kubernetes manifests. Wrong cell? <a href="{{ site.repo_url }}/issues" rel="noopener">Open an issue</a>. <a href="{{ '/about/' | relative_url }}">About this site</a>.</p>
+      <p>
+        {%- assign meta = site.data.meta -%}
+        {%- if meta.maintainer %}Made by {% if meta.maintainer_url %}<a href="{{ meta.maintainer_url }}" rel="noopener">{{ meta.maintainer }}</a>{% else %}{{ meta.maintainer }}{% endif %}, so read the sources. {% endif -%}
+        {%- if meta.footer_note %}{{ meta.footer_note }} {% endif -%}
+        Wrong cell? <a href="{{ site.repo_url }}/issues" rel="noopener">Open an issue</a>. <a href="{{ '/about/' | relative_url }}">About this site</a>.
+      </p>
     </div>
   </footer>
 

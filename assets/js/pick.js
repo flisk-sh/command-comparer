@@ -1,5 +1,5 @@
 /* The Pick tools page. Loads compare.json once, then draws one table for every tab that
-   covers at least one picked tool. Flisk is always the first column. The picks live in the
+   covers at least one picked tool. The primary tool (_data/meta.yml) is always the first column. The picks live in the
    URL (?tools=a,b), so the link can be shared. Copy buttons and Note buttons are handled by
    compare.js, which listens on the whole document. */
 (function () {
@@ -22,7 +22,8 @@
   var emptyEl = document.getElementById("pick-empty");
   var errorEl = document.getElementById("pick-error");
 
-  var DEFAULT = ["terraform", "compose", "tilt"];
+  var DEFAULT = [];
+  var primary = "";
   var db = null;
   var state = { tools: [], q: "", notes: false };
 
@@ -39,7 +40,8 @@
 
   // --- State and URL -----------------------------------------------------
   function cleanTools(list) {
-    var seen = { flisk: true };
+    var seen = {};
+    seen[primary] = true;
     var ids = [];
     list.forEach(function (raw) {
       var id = String(raw).trim();
@@ -81,13 +83,13 @@
   function renderPicker() {
     chipsEl.textContent = "";
 
-    var flisk = el("button", "chip chip-tool chip-flisk", toolName("flisk"));
-    flisk.type = "button";
-    flisk.disabled = true;
-    flisk.setAttribute("data-tool", "flisk");
-    flisk.setAttribute("aria-pressed", "true");
-    flisk.setAttribute("aria-label", "Flisk is always shown");
-    chipsEl.appendChild(flisk);
+    var first = el("button", "chip chip-tool chip-primary", toolName(primary));
+    first.type = "button";
+    first.disabled = true;
+    first.setAttribute("data-tool", primary);
+    first.setAttribute("aria-pressed", "true");
+    first.setAttribute("aria-label", toolName(primary) + " is always shown");
+    chipsEl.appendChild(first);
 
     state.tools.forEach(function (id) {
       var b = el("button", "chip chip-tool", toolName(id));
@@ -109,7 +111,7 @@
 
     var items = [];
     Object.keys(db.tools).forEach(function (id) {
-      if (id === "flisk" || state.tools.indexOf(id) !== -1) return;
+      if (id === primary || state.tools.indexOf(id) !== -1) return;
       var t = db.tools[id];
       var b = el("button", "add-item");
       b.type = "button";
@@ -208,7 +210,7 @@
     hr.appendChild(th0);
     cols.forEach(function (id) {
       var t = db.tools[id];
-      var th = el("th", "col-tool" + (id === "flisk" ? " col-flisk" : ""));
+      var th = el("th", "col-tool" + (id === primary ? " col-primary" : ""));
       th.scope = "col";
       th.setAttribute("data-tool", id);
       var a = el("a", null, t.name);
@@ -230,7 +232,7 @@
       rh.appendChild(el("span", "cell-task-name", task.task));
       tr.appendChild(rh);
       cols.forEach(function (id) {
-        var td = el("td", "col-tool" + (id === "flisk" ? " col-flisk" : ""));
+        var td = el("td", "col-tool" + (id === primary ? " col-primary" : ""));
         td.setAttribute("data-tool", id);
         td.setAttribute("data-label", toolName(id));
         var cell = task.cells[id];
@@ -267,7 +269,7 @@
     var rowsShown = 0;
 
     db.tabs.forEach(function (tab) {
-      var cols = ["flisk"].concat(state.tools.filter(function (id) { return tab.tools.indexOf(id) !== -1; }));
+      var cols = [primary].concat(state.tools.filter(function (id) { return tab.tools.indexOf(id) !== -1; }));
       if (cols.length < 2) return;
       var data = db.compare[tab.id];
       if (!data) return;
@@ -287,7 +289,7 @@
       : "";
 
     if (!state.tools.length) {
-      emptyEl.textContent = "Add a tool besides Flisk to see it here.";
+      emptyEl.textContent = "Add a tool besides " + toolName(primary) + " to see it here.";
       emptyEl.hidden = false;
     } else if (!sections) {
       emptyEl.textContent = "No task matches. Try a shorter search.";
@@ -352,6 +354,10 @@
 
   function init(data) {
     db = data;
+    primary = data.primary;
+    DEFAULT = (data.pick_default && data.pick_default.length)
+      ? data.pick_default
+      : Object.keys(db.tools).filter(function (id) { return id !== primary; }).slice(0, 3);
     readUrl();
     input.value = state.q;
     toolbar.hidden = false;

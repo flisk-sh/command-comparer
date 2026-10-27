@@ -13,23 +13,9 @@ url: "https://cmd.flisk.sh"
 baseurl: ""
 
 repo_url: "https://github.com/flisk-sh/command-comparer"
-flisk_url: "https://flisk.sh"
 
 markdown: kramdown
 
-# One stub per tab in _tabs/ (front matter `tab: <id>`). The page is built from
-# _data/tabs.yml, _data/tools.yml and _data/compare/<id>.yml. The home page is the first tab.
-collections:
-  tabs:
-    output: true
-    permalink: /:name/
-
-defaults:
-  - scope:
-      path: ""
-      type: "tabs"
-    values:
-      layout: tab
 
 exclude:
   - Gemfile
