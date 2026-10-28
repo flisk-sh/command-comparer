@@ -17,6 +17,10 @@ repo_url: "https://github.com/flisk-sh/command-comparer"
 markdown: kramdown
 
 
+# Jekyll skips dot-folders; publish /.well-known/security.txt.
+include:
+  - .well-known
+
 exclude:
   - Gemfile
   - Gemfile.lock
