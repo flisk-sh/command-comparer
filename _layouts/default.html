@@ -18,7 +18,13 @@
   <meta property="og:title" content="{{ page_title | escape }}">
   <meta property="og:description" content="{{ page_desc | escape }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="{{ '/assets/og.png' | absolute_url }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Command Comparer: Flisk next to the usual tools, every command with a source link">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ '/assets/og.png' | absolute_url }}">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" sizes="32x32">
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
