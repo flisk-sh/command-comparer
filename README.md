@@ -2,10 +2,10 @@
 
 Side-by-side commands for [Flisk](https://flisk.sh), Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden, PM2 and more, across 16 tabs. Flisk is always the first column. Every cell links to the official docs behind it.
 
-Live site: <https://cmd.flisk.sh/>
+Live site: <https://cmd.flisk.si/>
 
 <p align="center">
-  <a href="https://cmd.flisk.sh/">
+  <a href="https://cmd.flisk.si/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
       <img alt="The Overview tab of Command Comparer: Flisk, Terraform, AWS CDK, Docker Compose, Tilt, Skaffold, Garden and PM2 side by side, with one command per cell and a tab for each comparison" src="docs/screenshot-light.png">
@@ -151,11 +151,11 @@ docker run --rm -p 4000:4000 -v "$PWD":/site -w /site ruby:3.3 \
 
 Pushing to `main` runs `.github/workflows/site.yml`. It checks the data, builds with Jekyll and deploys with the official GitHub Pages actions. Pages is set to deploy from GitHub Actions (Settings, Pages, Source). Unlike CloudComparer, no personal access token or `gh-pages` branch is needed.
 
-The site runs on the custom domain `cmd.flisk.sh`:
+The site runs on the custom domain `cmd.flisk.si`:
 
 - DNS (Cloudflare, zone `flisk.sh`): a `CNAME` record, name `cmd`, target `flisk-sh.github.io`, DNS only.
-- GitHub Pages (Settings, Pages): custom domain `cmd.flisk.sh`, Enforce HTTPS on. The `CNAME` file in the repo records the same name.
-- `_config.yml`: `url: https://cmd.flisk.sh` and an empty `baseurl`. If you serve the site under a path instead, set `baseurl` to that path.
+- GitHub Pages (Settings, Pages): custom domain `cmd.flisk.si`, Enforce HTTPS on. The `CNAME` file in the repo records the same name.
+- `_config.yml`: `url: https://cmd.flisk.si` and an empty `baseurl`. If you serve the site under a path instead, set `baseurl` to that path.
 
 ## Update the engine
 

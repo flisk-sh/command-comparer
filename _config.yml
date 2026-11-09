@@ -7,9 +7,9 @@ description: >-
   PM2 and more, across 16 tabs, with a source link for every cell.
 lang: en
 
-# Custom domain cmd.flisk.sh (DNS on Cloudflare, CNAME to flisk-sh.github.io), served from the root.
+# Custom domain cmd.flisk.si (DNS on Cloudflare, CNAME to flisk-sh.github.io), served from the root.
 # The old project URL, https://flisk-sh.github.io/command-comparer/, redirects here.
-url: "https://cmd.flisk.sh"
+url: "https://cmd.flisk.si"
 baseurl: ""
 
 repo_url: "https://github.com/flisk-sh/command-comparer"

@@ -2,4 +2,4 @@ Contact: https://github.com/flisk-sh/command-comparer/security/advisories/new
 Expires: 2027-10-24T00:00:00.000Z
 Policy: https://github.com/flisk-sh/flisk/blob/main/.github/SECURITY.md
 Preferred-Languages: en
-Canonical: https://cmd.flisk.sh/.well-known/security.txt
+Canonical: https://cmd.flisk.si/.well-known/security.txt
