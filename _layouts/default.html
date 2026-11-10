@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- include current-tab.html -%}
-  {%- assign page_title = site.title -%}
+  {%- comment -%} The homepage title is "<site title>: <what it does>", from home_title in _config.yml. {%- endcomment -%}
+  {%- assign page_title = site.home_title | default: site.title -%}
   {%- assign page_desc = site.description | strip -%}
   {%- if cur_tab -%}
     {%- if page.tab != "overview" -%}{%- assign page_title = cur_tab.title | append: " | " | append: site.title -%}{%- endif -%}
@@ -14,7 +15,9 @@
   {%- endif %}
   <title>{{ page_title | escape }}</title>
   <meta name="description" content="{{ page_desc | escape }}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:title" content="{{ page_title | escape }}">
   <meta property="og:description" content="{{ page_desc | escape }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
@@ -25,7 +28,10 @@
   <meta property="og:image:alt" content="Command Comparer: Flisk next to the usual tools, every command with a source link">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{{ '/assets/og.png' | absolute_url }}">
+  <meta name="twitter:title" content="{{ page_title | escape }}">
   <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" sizes="32x32">
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
   <link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}">
