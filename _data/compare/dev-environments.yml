@@ -18,7 +18,7 @@ tasks:
       devbox:
         cmd: devbox init
         note: "Creates an empty devbox.json"
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-init/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/init.go"
   - id: add
     task: Add a tool or package
     keywords: install node go cli
@@ -33,7 +33,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         cmd: devbox add ripgrep
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-add/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/add.go"
   - id: enter
     task: Enter the environment
     keywords: shell up open
@@ -48,7 +48,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         cmd: devbox shell
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-shell/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/shell.go"
   - id: run
     task: Run one command in it
     keywords: exec run
@@ -61,7 +61,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         cmd: "devbox run echo \"Hello World\""
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-run/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/run.go"
   - id: start
     task: "Start the app's services"
     keywords: up services
@@ -76,7 +76,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         cmd: devbox services up
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-services-up/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/services.go"
   - id: stop
     task: Stop services
     keywords: down
@@ -90,7 +90,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         cmd: devbox services stop
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-services-stop/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/services.go"
   - id: check
     task: Check the machine
     keywords: doctor diagnose
@@ -104,7 +104,7 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
       devbox:
         status: "none"
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/root.go"
   - id: build
     task: Build an image
     keywords: docker dockerfile
@@ -119,7 +119,7 @@ tasks:
         cmd: devbox generate dockerfile
         status: "partial"
         note: "Writes a Dockerfile; it does not build the image"
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-generate-dockerfile/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/generate.go"
   - id: generate
     task: Generate a devcontainer
     keywords: devcontainer.json
@@ -133,4 +133,4 @@ tasks:
         source: "https://github.com/devcontainers/cli/blob/main/docs/templates/apply.md"
       devbox:
         cmd: devbox generate devcontainer
-        source: "https://www.jetify.com/docs/devbox/cli-reference/devbox-generate-devcontainer/"
+        source: "https://github.com/jetify-com/devbox/blob/main/internal/boxcli/generate.go"

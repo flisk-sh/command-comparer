@@ -87,7 +87,7 @@ devbox:
   name: Devbox
   tagline: Nix-based toolchain
   site: https://www.jetify.com/devbox
-  docs: https://www.jetify.com/docs/devbox/cli-reference/devbox/
+  docs: https://github.com/jetify-com/devbox/blob/main/internal/boxcli/root.go
 codespaces:
   name: GitHub Codespaces
   tagline: Cloud dev machine
