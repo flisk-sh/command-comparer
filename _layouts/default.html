@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- include flisk-analytics.html -%}
   {%- include current-tab.html -%}
   {%- comment -%} The homepage title is "<site title>: <what it does>", from home_title in _config.yml. {%- endcomment -%}
   {%- assign page_title = site.home_title | default: site.title -%}
