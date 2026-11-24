@@ -9,7 +9,8 @@ tasks:
         cmd:
           - flisk project
           - flisk init
-        note: Writes the master config. Add a template name to clone a starter.
+          - flisk create
+        note: Writes the master config. flisk create asks a few questions first. Or clone a starter.
         source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/project.ts
       terraform:
         cmd: terraform init
@@ -45,8 +46,10 @@ tasks:
     keywords: resource new service backend frontend worker agent api
     cells:
       flisk:
-        cmd: flisk resource api --type backend
-        note: Creates the service and its service.json. Also frontend, worker, mcp, agent.
+        cmd:
+          - flisk resource api --type backend
+          - flisk tool add react
+        note: Creates the service and its service.json. Also frontend, worker, mcp, agent. Or add a tool by name.
         source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/resource.ts
       terraform:
         status: none
@@ -570,4 +573,113 @@ tasks:
       cdk:
         status: none
         note: CDK deploys to AWS, so there are no local Docker networks to clean up.
+        source: https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html
+  - id: run-in-service
+    task: Run a command in a service
+    keywords: exec shell sh bash enter one-off env
+    cells:
+      flisk:
+        cmd: flisk run orders-api -- sh
+        note: Runs on your machine with the service's environment. Add --json for scripts.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/run.ts
+      terraform:
+        status: none
+        note: No command for it. Terraform manages infrastructure, not running processes.
+        source: https://developer.hashicorp.com/terraform/cli/commands
+      compose:
+        cmd: docker compose exec orders-api sh
+        note: Opens a shell in the running container.
+        source: https://docs.docker.com/reference/cli/docker/compose/exec/
+      tilt:
+        cmd: tilt alpha shell orders-api
+        status: partial
+        note: Alpha. Opens a shell only, in a Kubernetes pod.
+        source: https://docs.tilt.dev/cli/tilt_alpha_shell.html
+      skaffold:
+        status: none
+        note: No shell command. skaffold exec runs a custom action, not a shell.
+        source: https://skaffold.dev/docs/references/cli/
+      garden:
+        cmd: garden exec orders-api -- /bin/sh
+        note: Runs a command in a running service.
+        source: https://docs.garden.io/reference/commands#garden-exec
+      pm2:
+        status: none
+        note: No exec command. PM2 only manages processes.
+        source: https://pm2.keymetrics.io/docs/usage/commands/
+      cdk:
+        status: none
+        note: CDK deploys to AWS. It has no command to run something inside a resource.
+        source: https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html
+  - id: open-app
+    task: Open the app in the browser
+    keywords: open url frontend web launch
+    cells:
+      flisk:
+        cmd: flisk open
+        note: Opens the first ready frontend, or the one you name. --print shows the URL only.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/open.ts
+      terraform:
+        status: none
+        note: No command for it. terraform output only prints values.
+        source: https://developer.hashicorp.com/terraform/cli/commands
+      compose:
+        status: none
+        note: No command for it. docker compose ps lists the ports.
+        source: https://docs.docker.com/reference/cli/docker/compose/
+      tilt:
+        status: none
+        note: tilt up opens the Tilt UI, not your app.
+        source: https://docs.tilt.dev/cli/tilt.html
+      skaffold:
+        status: none
+        note: No command for it. --port-forward only forwards ports.
+        source: https://skaffold.dev/docs/references/cli/
+      garden:
+        status: none
+        note: No command for it.
+        source: https://docs.garden.io/reference/commands
+      pm2:
+        status: none
+        note: No command for it. PM2 does not know which process serves a page.
+        source: https://pm2.keymetrics.io/docs/usage/commands/
+      cdk:
+        status: none
+        note: No command for it. CDK deploys to AWS.
+        source: https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html
+  - id: dashboard
+    task: Watch the stack in a terminal dashboard
+    keywords: ui tui monitor interactive hud
+    cells:
+      flisk:
+        cmd: flisk ui
+        note: Terminal dashboard to watch and manage your stacks and services.
+        source: https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/ui.tsx
+      terraform:
+        status: none
+        note: No dashboard. Terraform prints a plan and a result.
+        source: https://developer.hashicorp.com/terraform/cli/commands
+      compose:
+        status: none
+        note: No dashboard. docker compose ps and logs print snapshots.
+        source: https://docs.docker.com/reference/cli/docker/compose/
+      tilt:
+        cmd: tilt up
+        note: Starts the stack and opens a terminal UI. Press space for the web UI.
+        source: https://docs.tilt.dev/cli/tilt_up.html
+      skaffold:
+        status: none
+        note: No dashboard. skaffold dev streams logs.
+        source: https://skaffold.dev/docs/references/cli/
+      garden:
+        status: none
+        note: No terminal dashboard command.
+        source: https://docs.garden.io/reference/commands
+      pm2:
+        cmd: pm2 monit
+        note: Terminal dashboard of CPU, memory and logs for each process.
+        source: https://pm2.keymetrics.io/docs/usage/commands/
+      cdk:
+        status: none
+        note: No dashboard. CDK prints deploy progress.
         source: https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd.html

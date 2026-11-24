@@ -8,5 +8,5 @@ footer_note: "Flisk is local-only: it does not deploy or write Kubernetes manife
 about_note: Terraform and CDK provision infrastructure. Flisk runs a local dev loop and never deploys.
 pick_default: [terraform, compose, tilt]
 checked:
-  date: "2026-10-27"
-  version: "1.4.10"
+  date: "2026-11-24"
+  version: "1.4.73"
