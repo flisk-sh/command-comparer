@@ -24,10 +24,22 @@ STATUSES = %w[match partial none na].freeze
 NOTE_MAX = 110
 BLURB_MAX = 100
 
-check_cli = ARGV.include?("--cli")
-check_links = ARGV.include?("--links")
-todo_ok = ARGV.include?("--todo-ok")
-only = ARGV.each_with_index.select { |a, _| a == "--tab" }.map { |_, i| ARGV[i + 1] }.compact
+check_cli = check_links = todo_ok = false
+only = []
+args = ARGV.dup
+until args.empty?
+  case arg = args.shift
+  when "--cli" then check_cli = true
+  when "--links" then check_links = true
+  when "--todo-ok" then todo_ok = true
+  when "--tab"
+    id = args.shift
+    abort "--tab: expected a tab ID" if id.nil? || id.empty? || id.start_with?("-")
+    only << id
+  else
+    abort "unknown argument: #{arg}"
+  end
+end
 
 errors = []
 warnings = []

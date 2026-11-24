@@ -23,7 +23,9 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
       - name: Check the command data
-        run: ruby scripts/check-data.rb
+        run: |
+          ruby scripts/check-data.test.rb
+          ruby scripts/check-data.rb
       - name: Build site
         run: bundle exec jekyll build
         env:
