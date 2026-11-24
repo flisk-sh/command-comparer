@@ -133,8 +133,10 @@ tasks:
     keywords: exec enter ssh
     cells:
       flisk:
-        status: "none"
-        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+        cmd: flisk run api -- sh
+        status: partial
+        note: Runs locally with the service's environment. There is no pod to enter.
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/run.ts"
       skaffold:
         status: none
         note: No shell command. skaffold exec runs a custom action, not a shell.

@@ -123,8 +123,10 @@ tasks:
     keywords: shell exec sh bash enter
     cells:
       flisk:
-        status: "none"
-        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+        cmd: flisk run api -- sh
+        status: partial
+        note: Runs on your machine with the service's environment, not inside a container.
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/run.ts"
       compose:
         cmd: docker compose exec api sh
         source: "https://docs.docker.com/reference/cli/docker/compose/exec/"

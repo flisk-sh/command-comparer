@@ -54,8 +54,10 @@ tasks:
     keywords: exec run
     cells:
       flisk:
-        status: "none"
-        source: "https://github.com/flisk-sh/flisk/blob/main/docs/cheat-sheet.md"
+        cmd: flisk run api -- printenv DATABASE_URL
+        status: partial
+        note: Runs one command with a service's environment. There is no environment to enter.
+        source: "https://github.com/flisk-sh/flisk/blob/main/cli/src/commands/run.ts"
       devcontainers:
         cmd: devcontainer exec --workspace-folder . cargo run
         source: "https://github.com/devcontainers/cli/blob/main/README.md"
